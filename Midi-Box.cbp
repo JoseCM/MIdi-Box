@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="Midi-Box" />
+		<Option pch_mode="2" />
+		<Option compiler="buildroot_toolchain_compiler" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/Midi-Box" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="buildroot_toolchain_compiler" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/Midi-Box" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="buildroot_toolchain_compiler" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add directory="Inc" />
+			<Add directory="Inc/library" />
+		</Compiler>
+		<ResourceCompiler>
+			<Add directory="Inc" />
+			<Add directory="Inc/library" />
+		</ResourceCompiler>
+		<Linker>
+			<Add library="pthread" />
+			<Add library="MIDI_Library/libmidifile.a" />
+		</Linker>
+		<Unit filename="Inc/FILE_IO.h" />
+		<Unit filename="Inc/MIDI_Chain.h" />
+		<Unit filename="Inc/MIDI_ChainBlock.h" />
+		<Unit filename="Inc/MIDI_IO.h" />
+		<Unit filename="Inc/MIDI_IOBlock.h" />
+		<Unit filename="Inc/MIDI_MsgBuffer.h" />
+		<Unit filename="Inc/Physical_IO.h" />
+		<Unit filename="Inc/TrellisI2C.h" />
+		<Unit filename="Inc/UART_IO.h" />
+		<Unit filename="Inc/library/Binasc.h" />
+		<Unit filename="Inc/library/MidiEvent.h" />
+		<Unit filename="Inc/library/MidiEventList.h" />
+		<Unit filename="Inc/library/MidiFile.h" />
+		<Unit filename="Inc/library/MidiMessage.h" />
+		<Unit filename="Inc/library/Options.h" />
+		<Unit filename="MIDI_Library/Binasc.h" />
+		<Unit filename="MIDI_Library/MidiEvent.h" />
+		<Unit filename="MIDI_Library/MidiEventList.h" />
+		<Unit filename="MIDI_Library/MidiFile.h" />
+		<Unit filename="MIDI_Library/MidiMessage.h" />
+		<Unit filename="MIDI_Library/Options.h" />
+		<Unit filename="Src/FILE_IO.cpp" />
+		<Unit filename="Src/MIDI_Chain.cpp" />
+		<Unit filename="Src/MIDI_ChainBlock.cpp" />
+		<Unit filename="Src/MIDI_IO.cpp" />
+		<Unit filename="Src/MIDI_IOBlock.cpp" />
+		<Unit filename="Src/MIDI_MsgBuffer.cpp" />
+		<Unit filename="Src/Physical_IO.cpp" />
+		<Unit filename="Src/TrellisI2C.cpp" />
+		<Unit filename="Src/UART_IO.cpp" />
+		<Unit filename="Src/gpio.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Src/library/Binasc.cpp" />
+		<Unit filename="Src/library/MidiEvent.cpp" />
+		<Unit filename="Src/library/MidiEventList.cpp" />
+		<Unit filename="Src/library/MidiFile.cpp" />
+		<Unit filename="Src/library/MidiMessage.cpp" />
+		<Unit filename="Src/library/Options.cpp" />
+		<Unit filename="Src/main.cpp" />
+		<Extensions>
+			<code_completion>
+				<search_path add="Inc" />
+				<search_path add="MIDI_Library" />
+			</code_completion>
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

@@ -6,6 +6,7 @@
 #include <linux/types.h>
 #include <linux/spi/spidev.h>
 #include "gpio.h"
+#include "MidiMessage.h"
 
 #include <cstring>
 #include <string>
@@ -21,11 +22,11 @@ Physical_IO::Physical_IO(string device_i2c, string device_spi): MIDI_IO()
 	this->device_i2c = device_i2c;
 	this->device_spi = device_spi;
 
-	
+
 	//set buttons mapping
 	buttonMap.assign(16, MidiMessage() );
 	for(int i=0; i < 16; i++)
-		buttonMap[i].setCommand(0x90, i+48, 127);	
+		buttonMap[i].setCommand(0x90, i+48, 127);
 
 	//set encoder mapping
 	encoderMap.assign(4, MidiMessage() );
@@ -34,6 +35,8 @@ Physical_IO::Physical_IO(string device_i2c, string device_spi): MIDI_IO()
 
 	for(int i = 0; i < 4; i++)
 		encoder_value[i] = 63.5;
+
+    open();
 
 }
 
@@ -47,7 +50,6 @@ Physical_IO::~Physical_IO()
 bool Physical_IO::open()
 {
 
-	struct spi_ioc_transfer spi;
 	char spi_out[10];
 
 	//open i2c device
@@ -65,13 +67,13 @@ bool Physical_IO::open()
 	if((fd_spi= ::open(device_spi.c_str(), O_RDWR)) < 0){
 		perror("Failed to open SPI: ");
 		return false;
-	} 
+	}
 
-	if(ioctl(fd_spi, SPI_IOC_WR_MODE, &spi_mode) < 0) { perror("Writing mode: "); return false;}	
+	if(ioctl(fd_spi, SPI_IOC_WR_MODE, &spi_mode) < 0) { perror("Writing mode: "); return false;}
 	if(ioctl(fd_spi, SPI_IOC_WR_BITS_PER_WORD, &spi_bpw) < 0) { perror("Writing bpw: "); return false;}
 	if(ioctl(fd_spi, SPI_IOC_WR_MAX_SPEED_HZ, &spi_speed) < 0) { perror("Writing speed: "); return false;}
 
-	if(ioctl(fd_spi, SPI_IOC_RD_MODE, &spi_mode) < 0) { perror("Writing mode: "); return false;}	
+	if(ioctl(fd_spi, SPI_IOC_RD_MODE, &spi_mode) < 0) { perror("Writing mode: "); return false;}
 	if(ioctl(fd_spi, SPI_IOC_RD_BITS_PER_WORD, &spi_bpw) < 0) { ("Writing bpw: "); return false;}
 	if(ioctl(fd_spi, SPI_IOC_RD_MAX_SPEED_HZ, &spi_speed) < 0) { perror("Writing speed: "); return false;}
 
@@ -84,11 +86,11 @@ bool Physical_IO::open()
 	CS_LOW();
 	write(fd_spi, spi_out, 3);
 	CS_HIGH();
-	
+
 	spi_out[0] = 0x40; spi_out[1] = 0x05; spi_out[2] = 0x20;
 	CS_LOW();
 	write(fd_spi, spi_out, 3);
-	CS_HIGH();		
+	CS_HIGH();
 
 	spi_out[0] = 0x41; spi_out[1] = 0x09;
 	CS_LOW();
@@ -138,7 +140,7 @@ MidiMessage& Physical_IO::buttonToMidiMsg(int button, uint8_t noteonff)
 
 	MidiMessage &msg = buttonMap[button];
 
-	msg[0] = noteonff ? msg[0] |= 0x90 : msg[0] |= 0x80; 
+	msg[0] = noteonff ? msg[0] |= 0x90 : msg[0] |= 0x80;
 
 	return msg;
 }
@@ -172,9 +174,9 @@ uint8_t Physical_IO::updateEncoderState(){
 					encoder_value[i/2] += 5.3;
 					status |= ( 1 << i/2);
 				} else if (temp_prev == 0x01 && temp_new == 0x00){
-					encoder_value[i/2] -= 5.3;		
+					encoder_value[i/2] -= 5.3;
 					status |= ( 1 << i/2);
-				} 
+				}
 
 				if(encoder_value[i/2] < 0.0) {
 					encoder_value[i/2] = 0.0;
@@ -182,7 +184,7 @@ uint8_t Physical_IO::updateEncoderState(){
 					encoder_value[i/2] = 127.0;
 				}
 
-			}			
+			}
 
 		}
 
@@ -198,3 +200,64 @@ uint8_t Physical_IO::updateButtonState(){
 	return readSwitches(&fd_i2c);
 
 }
+
+void* Physical_IO::Thread_InButton(void* arg)
+{
+    Physical_IO *phys_io = static_cast<Physical_IO*>(arg);
+	uint8_t encoderchanged = 0;
+	MidiMessage msg;
+
+	while(1){
+
+		encoderchanged = phys_io->updateEncoderState();
+
+		if(!encoderchanged)
+			continue;
+
+		for(int i = 0; i < 4; i++){
+			if(encoderchanged & (1 << i)){
+				msg = phys_io->encoderToMidiMsg(i);
+				phys_io->writeInMidiMsg(0, msg);
+			}
+		}
+	}
+
+}
+
+void* Physical_IO::Thread_InEncoder(void* arg)
+{
+    Physical_IO *phys_io = static_cast<Physical_IO*>(arg);
+	MidiMessage msg;
+
+	while(1){
+
+		usleep(30000);
+
+		if (phys_io->updateButtonState()){
+
+			for (uint8_t i=0; i<16; i++) {
+	        	// if it was pressed...
+	      		if (justPressed(i)){
+					msg = phys_io->buttonToMidiMsg(i, NOTE_ON);
+					phys_io->writeInMidiMsg(0, msg);
+				}
+
+				// if it was released, turn it off
+				if (justReleased(i)){
+					msg = phys_io->buttonToMidiMsg(i, NOTE_OFF);
+					phys_io->writeInMidiMsg(0, msg);
+				}
+	 		}
+	    }
+
+	}
+}
+
+void Physical_IO::run()
+{
+    pthread_create(&handle1, NULL, Physical_IO::Thread_InEncoder, static_cast<void*>(this));
+	pthread_create(&handle2, NULL, Physical_IO::Thread_InButton, static_cast<void*>(this));
+}
+
+
+
