@@ -31,7 +31,7 @@ Physical_IO::Physical_IO(string device_i2c, string device_spi): MIDI_IO()
 	//set encoder mapping
 	encoderMap.assign(4, MidiMessage() );
 	for(int i = 0; i < 4; i++)
-		encoderMap[i].setCommand(0xA0, i+1, 0);
+		encoderMap[i].setCommand(0xB0, i+1, 0);
 
 	for(int i = 0; i < 4; i++)
 		encoder_value[i] = 63.5;
@@ -147,6 +147,7 @@ MidiMessage& Physical_IO::buttonToMidiMsg(int button, uint8_t noteonff)
 
 MidiMessage& Physical_IO::encoderToMidiMsg(int encoder)
 {
+
 	MidiMessage &msg = encoderMap[encoder];
 
 	msg[2] = (uint8_t) encoder_value[encoder];
@@ -172,10 +173,12 @@ uint8_t Physical_IO::updateEncoderState(){
 
 				if(temp_prev == 0x00 && temp_new == 0x01){
 					encoder_value[i/2] += 5.3;
-					status |= ( 1 << i/2);
+					status |= ( 1 << (i/2));
+					printf("encoder %f\n", encoder_value[i/2]);
 				} else if (temp_prev == 0x01 && temp_new == 0x00){
 					encoder_value[i/2] -= 5.3;
-					status |= ( 1 << i/2);
+					status |= ( 1 << (i/2));
+					printf("encoder %f\n", encoder_value[i/2]);
 				}
 
 				if(encoder_value[i/2] < 0.0) {
@@ -201,7 +204,7 @@ uint8_t Physical_IO::updateButtonState(){
 
 }
 
-void* Physical_IO::Thread_InButton(void* arg)
+void* Physical_IO::Thread_InEncoder(void* arg)
 {
     Physical_IO *phys_io = static_cast<Physical_IO*>(arg);
 	uint8_t encoderchanged = 0;
@@ -224,7 +227,7 @@ void* Physical_IO::Thread_InButton(void* arg)
 
 }
 
-void* Physical_IO::Thread_InEncoder(void* arg)
+void* Physical_IO::Thread_InButton(void* arg)
 {
     Physical_IO *phys_io = static_cast<Physical_IO*>(arg);
 	MidiMessage msg;
@@ -238,13 +241,16 @@ void* Physical_IO::Thread_InEncoder(void* arg)
 			for (uint8_t i=0; i<16; i++) {
 	        	// if it was pressed...
 	      		if (justPressed(i)){
+                    printf("pressed %d\n", i);
 					msg = phys_io->buttonToMidiMsg(i, NOTE_ON);
 					phys_io->writeInMidiMsg(0, msg);
 				}
 
 				// if it was released, turn it off
 				if (justReleased(i)){
-					msg = phys_io->buttonToMidiMsg(i, NOTE_OFF);
+                    printf("released %d\n", i);
+					msg = phys_io->buttonToMidiMsg(i, NOTE_ON);
+					msg[2] = 0;
 					phys_io->writeInMidiMsg(0, msg);
 				}
 	 		}

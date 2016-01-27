@@ -63,7 +63,7 @@ void* MIDI_InBlock::Thread_In(void *argument)
             pthread_exit(nullptr);
 
         msg = io_stream->readInMidiMsg(io_block->getChannel());
-        std::cout << "received message" << std::endl;
+        //std::cout << "received message" << std::endl;
 
         io_block->passMidiMsg(msg);
 
@@ -113,7 +113,7 @@ void* MIDI_OutBlock::Thread_Out(void *argument)
             pthread_exit(nullptr);
 
         io_stream->writeOutMidiMsg(msg);
-        std::cout << "sent message" << std::endl;
+        //std::cout << "sent message" << std::endl;
 
     }
 }

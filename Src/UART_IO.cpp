@@ -24,20 +24,22 @@ UART_IO::~UART_IO()
 
 bool UART_IO::open(){
 	//"/dev/ttyAMA0"
-	fd_uart = ::open(device_uart.c_str(), O_RDWR | O_NOCTTY);
+	fd_uart = ::open(device_uart.c_str(), O_RDWR | O_NOCTTY);// | O_SYNC | O_DSYNC );// O_DIRECT);
 	if(fd_uart < 0)
 		perror("Opening uart decvice: ");
 
 	struct termios options;
 	tcgetattr(fd_uart, &options);
-//	options.c_cflag = B38400 | CS8 | CLOCAL | CREAD;
-//	options.c_iflag = IGNPAR;
-//	options.c_oflag = 0;
-//	options.c_lflag = 0;
-//	tcflush(fd_uart, TCIFLUSH);
+	options.c_cflag = B38400 | CS8 | CLOCAL | CREAD;
+	options.c_iflag = IGNPAR;
+	options.c_oflag = 0;
+	options.c_lflag = 0;
+	tcflush(fd_uart, TCIFLUSH);
 
     cfmakeraw(&options);
     tcsetattr(fd_uart, TCSANOW, &options);
+
+    //printf("MIN: %d, TIME: %d", options.c_cc[VMIN], options.c_cc[VTIME]);
 
     return true;
 }
@@ -61,6 +63,7 @@ uint8_t UART_IO::MIDI_GetNoParam(uint8_t status){
 		return 1;
 	} else {
 		return 2;
+
 	}
 
 }
@@ -68,27 +71,42 @@ uint8_t UART_IO::MIDI_GetNoParam(uint8_t status){
 void UART_IO::getNextMidiMsg(){
 
     uint8_t nobytes = 0;
-	uint8_t byte[3], counter = 0, temp = 0,  channel;
+	uint8_t byte[3], counter = 0, counter2 = 0, temp = 0,  channel, *ptr = nullptr;
 	MidiMessage msg;
 
-	if(read(fd_uart, byte, 1) != 1)
-        return;
+	printf("-------------------\n");
 
-	if((counter = MIDI_GetNoParam(byte[0]))){
-        while((temp = read(fd_uart, &byte[1], counter)) != counter){
-            counter -= temp;
-            nobytes += temp;
-            if(!counter)
-                break;
-        }
+	if((temp = read(fd_uart, byte, 1)) != 1){
+        //printf("bytes received = %d (0x%x)\n", temp, byte[0]);
+        return;
     }
 
-    printf("num bytes lost %x\n", nobytes);
-    nobytes = 0;
+   printf("bytes received = %d\n", temp);
 
-	msg.setSize(counter + 1);
-	for(int i = 0; i < counter + 1; i++)
+    if(byte[0] == 0xf8 || byte[0] == 0xfe)
+        return;
+
+	if((counter2 = counter = MIDI_GetNoParam(byte[0]))){
+
+        ptr = &byte[1];
+        while(1){
+            temp = read(fd_uart, ptr, counter);
+            printf("read result = %d\n", temp);
+            if(temp == counter)
+                break;
+
+            ptr += temp;
+            counter -= temp;
+
+        }
+
+    }
+
+	msg.setSize(counter2 + 1);
+	for(int i = 0; i < counter2 + 1; i++){
 		msg[i] = byte[i];
+		printf(" %x", msg[i]);
+    } printf("\n");
 
     channel = msg.getChannel();
 

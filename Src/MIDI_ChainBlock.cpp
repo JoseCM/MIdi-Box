@@ -33,9 +33,9 @@ MIDI_Chain* MIDI_ChainBlock::getMotherChain()
 
 void MIDI_ChainBlock::passMidiMsg(MidiMessage &msg)
 {
-    motherChain->lockChain();
+    //motherChain->lockChain();
     nextBlock->inBuffer.writeMidiMsg(msg);
-    motherChain->unlockChain();
+    //motherChain->unlockChain();
 }
 
 

@@ -6,7 +6,7 @@
 #include <string>
 #include <cstdint>
 
-#define NOTE_ON	1
+#define NOTE_ON	 1
 #define NOTE_OFF 0
 
 #define SPIDEVICE "/dev/spidev0.0"
