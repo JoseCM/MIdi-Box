@@ -3,78 +3,27 @@
 
 #include "MIDI_IO.h"
 #include "Physical_IO.h"
-
-#define SPIDEVICE "/dev/spidev0.0"
-#define I2CDEVICE "/dev/i2c-1"
-
-void* Thread_InEncoder(void *arg){
-
-	Physical_IO *phys_io = static_cast<Physical_IO*>(arg);
-	uint8_t encoderchanged = 0;
-	MidiMessage msg;
-
-	while(1){
-
-		encoderchanged = phys_io->updateEncoderState();
-
-		if(!encoderchanged)
-			continue;
-
-		for(int i = 0; i < 4; i++){
-			if(encoderchanged & (1 << i)){
-				msg = phys_io->encoderToMidiMsg(i);
-				phys_io->writeMidiMsg(msg);
-			}
-		}
-	}
-
-}
-
-void* Thread_InButton(void *arg){
-
-	Physical_IO *phys_io = static_cast<Physical_IO*>(arg);
-	MidiMessage msg;
-
-	while(1){
-
-		usleep(30000);
-
-		if (phys_io->updateButtonState()){
-
-			for (uint8_t i=0; i<16; i++) {
-	        	// if it was pressed...
-	      		if (justPressed(i)){
-					msg = phys_io->buttonToMidiMsg(i, NOTE_ON);
-					phys_io->writeMidiMsg(msg);
-				}
-
-				// if it was released, turn it off
-				if (justReleased(i)){
-					msg = phys_io->buttonToMidiMsg(i, NOTE_OFF);
-					phys_io->writeMidiMsg(msg);
-				}
-	 		}
-	    }
-
-	}
-
-}
+#include "UART_IO.h"
+#include "MIDI_Chain.h"
+#include "MIDI_IOBlock.h"
 
 
 int main(int argc, char **argv){
 
-	pthread_t thread_handle;
+	//Physical_IO	*phys_io = new Physical_IO(I2CDEVICE, SPIDEVICE);
+    UART_IO *uart_io = new UART_IO(UARTDEVICE);
+    UART_IO *usb_io = new UART_IO(USBDEVICE);
 
-	Physical_IO	*phys_io = new Physical_IO(I2CDEVICE, SPIDEVICE);
+    //phys_io->run();
+    uart_io->run();
+    usb_io->run();
 
+    MIDI_InBlock *inblock = new MIDI_InBlock(0, usb_io);
+    MIDI_OutBlock *outblock = new MIDI_OutBlock(0, uart_io);
 
-
-
-
-
-
-	pthread_create(&thread_handle, NULL, Thread_InEncoder, static_cast<void*>(phys_io));
-	pthread_create(&thread_handle, NULL, Thread_InButton, static_cast<void*>(phys_io));
+    MIDI_Chain *testchain = new MIDI_Chain(inblock, outblock);
+    inblock->run();
+    outblock->run();
 
 	pthread_exit(NULL);
 

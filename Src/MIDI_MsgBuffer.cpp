@@ -3,15 +3,14 @@
 #include <pthread.h>
 
 
-MIDI_MsgBuffer::MIDI_MsgBuffer()
+MIDI_MsgBuffer::MIDI_MsgBuffer() : mutex(PTHREAD_MUTEX_INITIALIZER), cond_var(PTHREAD_COND_INITIALIZER)
 {
-	mutex = PTHREAD_MUTEX_INITIALIZER;
-	cond_var = PTHREAD_COND_INITIALIZER;
+
 }
 
 MIDI_MsgBuffer::~MIDI_MsgBuffer()
 {
-	
+
 }
 
 MidiMessage MIDI_MsgBuffer::readMidiMsg(void)

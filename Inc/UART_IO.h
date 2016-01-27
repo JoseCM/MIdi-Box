@@ -5,6 +5,9 @@
 #include <string>
 #include <cstdint>
 
+#define UARTDEVICE "/dev/ttyAMA0"
+#define USBDEVICE  "/dev/ttyUSB0"
+
 using namespace std;
 
 
@@ -16,10 +19,14 @@ public:
 	UART_IO(string);
 	~UART_IO();
 	void getNextMidiMsg();
-	void sendNextMidiMsg(MidiMessage&);
+	void sendNextMidiMsg();
 	uint8_t MIDI_GetNoParam(uint8_t status);
 	bool open();
 	bool close();
+
+    static void* Thread_InMidi(void *arg);
+    static void* Thread_OutMidi(void *arg);
+	virtual void run();
 
 };
 

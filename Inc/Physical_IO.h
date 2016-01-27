@@ -9,6 +9,10 @@
 #define NOTE_ON	1
 #define NOTE_OFF 0
 
+#define SPIDEVICE "/dev/spidev0.0"
+#define I2CDEVICE "/dev/i2c-1"
+
+
 using namespace std;
 
 class Physical_IO: public MIDI_IO
@@ -30,6 +34,10 @@ public:
 	MidiMessage& encoderToMidiMsg(int);
 	uint8_t updateEncoderState();
 	uint8_t updateButtonState();
+
+    static void* Thread_InButton(void *arg);
+    static void* Thread_InEncoder(void *arg);
+	virtual void run();
 };
 
 #endif

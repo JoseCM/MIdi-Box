@@ -1,0 +1,198 @@
+# depslib dependency file v1.0
+1453585662 source:/home/josemar/Desktop/Midi-Box/Src/FILE_IO.cpp
+	"FILE_IO.h"
+
+1453585626 /home/josemar/Desktop/Midi-Box/Inc/FILE_IO.h
+	"MIDI_IO.h"
+	"MidiFile.h"
+
+1453653454 /home/josemar/Desktop/Midi-Box/Inc/MIDI_IO.h
+	<pthread.h>
+	"MIDI_MsgBuffer.h"
+	<vector>
+
+1453245651 /home/josemar/Desktop/Midi-Box/Inc/MIDI_MsgBuffer.h
+	"MIDI_Library/MidiMessage.h"
+	<list>
+	<pthread.h>
+
+1453667149 /home/josemar/Desktop/Midi-Box//MIDI_Library/MidiMessage.h
+	<vector>
+
+1451167116 /home/josemar/Desktop/Midi-Box/MIDI_Library/MidiFile.h
+	"MidiEventList.h"
+	<vector>
+	<istream>
+	<fstream>
+
+1451167116 /home/josemar/Desktop/Midi-Box/MIDI_Library/MidiEventList.h
+	"MidiEvent.h"
+	<vector>
+
+1451167116 /home/josemar/Desktop/Midi-Box/MIDI_Library/MidiEvent.h
+	"MidiMessage.h"
+	<vector>
+
+1453667149 /home/josemar/Desktop/Midi-Box/MIDI_Library/MidiMessage.h
+	<vector>
+
+1450705560 source:/home/josemar/Desktop/Midi-Box/Src/gpio.c
+	"gpio.h"
+
+1453586758 /home/josemar/Desktop/Midi-Box/Inc/gpio.h
+	<unistd.h>
+	<stdlib.h>
+	<stdio.h>
+	<stdint.h>
+	<fcntl.h>
+	<string.h>
+
+1453657113 source:/home/josemar/Desktop/Midi-Box/Src/main.cpp
+	<pthread.h>
+	<unistd.h>
+	"MIDI_IO.h"
+	"Physical_IO.h"
+	"UART_IO.h"
+	"MIDI_Chain.h"
+	"MIDI_IOBlock.h"
+
+1453653594 /home/josemar/Desktop/Midi-Box/Inc/Physical_IO.h
+	"MIDI_IO.h"
+	"TrellisI2C.h"
+	<string>
+	<cstdint>
+
+1453245326 /home/josemar/Desktop/Midi-Box/Inc/TrellisI2C.h
+
+1453667736 source:/home/josemar/Desktop/Midi-Box/Src/MIDI_IO.cpp
+	"MIDI_IO.h"
+	"MidiMessage.h"
+
+1453593315 source:/home/josemar/Desktop/Midi-Box/Src/MIDI_MsgBuffer.cpp
+	"MIDI_MsgBuffer.h"
+	<pthread.h>
+
+1453667771 source:/home/josemar/Desktop/Midi-Box/Src/Physical_IO.cpp
+	"Physical_IO.h"
+	<unistd.h>
+	<fcntl.h>
+	<sys/ioctl.h>
+	<linux/types.h>
+	<linux/spi/spidev.h>
+	"gpio.h"
+	"MidiMessage.h"
+	<cstring>
+	<string>
+
+1453245284 source:/home/josemar/Desktop/Midi-Box/Src/TrellisI2C.cpp
+	"TrellisI2C.h"
+	<stdio.h>
+	<stdlib.h>
+	<stdint.h>
+	<string.h>
+	<fcntl.h>
+	<sys/ioctl.h>
+
+1453809427 source:/home/josemar/Desktop/Midi-Box/Src/UART_IO.cpp
+	"UART_IO.h"
+	<iostream>
+	<cstdint>
+	<unistd.h>
+	<fcntl.h>
+	<termios.h>
+	<string>
+
+1453655099 /home/josemar/Desktop/Midi-Box/Inc/UART_IO.h
+	"MIDI_IO.h"
+	<string>
+	<cstdint>
+
+1453658258 source:/home/josemar/Desktop/Midi-Box/Src/MIDI_Chain.cpp
+	"MIDI_Chain.h"
+	"MIDI_IOBlock.h"
+
+1453650960 /home/josemar/Desktop/Midi-Box/Inc/MIDI_Chain.h
+	<pthread.h>
+	<list>
+
+1453652354 /home/josemar/Desktop/Midi-Box/Inc/MIDI_IOBlock.h
+	<cstdint>
+	"MIDI_ChainBlock.h"
+
+1453652708 /home/josemar/Desktop/Midi-Box/Inc/MIDI_ChainBlock.h
+	"MidiMessage.h"
+	"MIDI_MsgBuffer.h"
+
+1453651289 source:/home/josemar/Desktop/Midi-Box/Src/MIDI_ChainBlock.cpp
+	"MIDI_ChainBlock.h"
+	"MIDI_Chain.h"
+
+1453807142 source:/home/josemar/Desktop/Midi-Box/Src/MIDI_IOBlock.cpp
+	"MIDI_IOBlock.h"
+	<iostream>
+	<stdio.h>
+	"MIDI_IO.h"
+
+1453243016 /home/josemar/Desktop/Midi-Box/Inc/library/MidiFile.h
+	"MidiEventList.h"
+	<vector>
+	<istream>
+	<fstream>
+
+1453243016 /home/josemar/Desktop/Midi-Box/Inc/library/MidiEventList.h
+	"MidiEvent.h"
+	<vector>
+
+1453243016 /home/josemar/Desktop/Midi-Box/Inc/library/MidiEvent.h
+	"MidiMessage.h"
+	<vector>
+
+1453669727 /home/josemar/Desktop/Midi-Box/Inc/library/MidiMessage.h
+	<vector>
+
+1453243016 source:/home/josemar/Desktop/Midi-Box/Src/library/Binasc.cpp
+	"Binasc.h"
+	<sstream>
+	<string.h>
+
+1453243016 /home/josemar/Desktop/Midi-Box/Inc/library/Binasc.h
+	<iostream>
+	<fstream>
+	<stdlib.h>
+
+1453243016 source:/home/josemar/Desktop/Midi-Box/Src/library/MidiEvent.cpp
+	"MidiEvent.h"
+	<stdlib.h>
+
+1453243016 source:/home/josemar/Desktop/Midi-Box/Src/library/MidiEventList.cpp
+	"MidiEventList.h"
+	<vector>
+	<iostream>
+
+1453243016 source:/home/josemar/Desktop/Midi-Box/Src/library/MidiFile.cpp
+	"MidiFile.h"
+	"Binasc.h"
+	<string.h>
+	<iostream>
+	<iomanip>
+	<fstream>
+	<sstream>
+
+1453243016 source:/home/josemar/Desktop/Midi-Box/Src/library/Options.cpp
+	"Options.h"
+	<stdlib.h>
+	<string.h>
+	<cctype>
+	<iostream>
+	<algorithm>
+
+1453243016 /home/josemar/Desktop/Midi-Box/Inc/library/Options.h
+	<vector>
+	<map>
+	<string>
+
+1453669759 source:/home/josemar/Desktop/Midi-Box/Src/library/MidiMessage.cpp
+	"MidiMessage.h"
+	<vector>
+	<iostream>
+

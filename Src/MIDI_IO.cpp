@@ -1,8 +1,9 @@
 
 #include "MIDI_IO.h"
+#include "MidiMessage.h"
 
 MIDI_IO::MIDI_IO()
-{	
+{
 	inBuffer.assign(16, NULL);
 	inChannels.assign(16, false);
 	outBuffer = new MIDI_MsgBuffer();
@@ -18,19 +19,34 @@ MIDI_IO::~MIDI_IO()
 	}
 }
 
-MidiMessage MIDI_IO::readMidiMsg(int channel)
+MidiMessage MIDI_IO::readInMidiMsg(int channel)
 {
 	MidiMessage message;
 
 	if(channelOn(channel))
-	{	
-		message = inBuffer[channel]->readMidiMsg();	
+	{
+		message = inBuffer[channel]->readMidiMsg();
 	}
 
 	return message;
 }
 
-void MIDI_IO::writeMidiMsg(MidiMessage &msg)
+MidiMessage MIDI_IO::readOutMIdiMsg(){
+
+    return outBuffer->readMidiMsg();
+}
+
+
+void MIDI_IO::writeInMidiMsg(int channel, MidiMessage &msg){
+
+	if(channelOn(channel))
+	{
+		inBuffer[channel]->writeMidiMsg(msg);
+	}
+
+}
+
+void MIDI_IO::writeOutMidiMsg(MidiMessage &msg)
 {
 		outBuffer->writeMidiMsg(msg);
 }
@@ -46,8 +62,8 @@ bool MIDI_IO::registerChannel(int channel)  //type: 0-in, 1-out
 	} else
 		return false;
 
-	
-	
+
+
 	return true;
 }
 
@@ -62,15 +78,15 @@ bool MIDI_IO::unregisteChannel(int channel)  //type: 0-in, 1-out
 		inBuffer[channel] = NULL;
 		inChannels[channel] = false;
 	}
-	else  
+	else
 		return false;
-	
+
 	return true;
 }
 
 bool MIDI_IO::channelOn(int channel)
-{	
+{
 	return inChannels[channel];
-	
+
 }
 
