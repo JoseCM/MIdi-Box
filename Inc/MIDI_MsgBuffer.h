@@ -1,7 +1,7 @@
 #ifndef __MIDI_MESSAGEBUFFER_H_
 #define __MIDI_MESSAGEBUFFER_H_
 
-#include "MIDI_Library/MidiMessage.h"
+#include "MidiMessage.h"
 #include <list>
 #include <pthread.h>
 
