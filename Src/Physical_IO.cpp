@@ -171,12 +171,12 @@ uint8_t Physical_IO::updateEncoderState(){
 
 			if(temp_prev != temp_new){
 
-				if(temp_prev == 0x00 && temp_new == 0x01){
-					encoder_value[i/2] += 5.3;
+				if(temp_prev == 0x00 && temp_new == 0x02){
+					encoder_value[i/2] -= 5.3;
 					status |= ( 1 << (i/2));
 					printf("encoder %f\n", encoder_value[i/2]);
-				} else if (temp_prev == 0x01 && temp_new == 0x00){
-					encoder_value[i/2] -= 5.3;
+				} else if (temp_prev == 0x02 && temp_new == 0x00){
+					encoder_value[i/2] += 5.3;
 					status |= ( 1 << (i/2));
 					printf("encoder %f\n", encoder_value[i/2]);
 				}

@@ -31,9 +31,9 @@ bool UART_IO::open(){
 	struct termios options;
 	tcgetattr(fd_uart, &options);
 	options.c_cflag = B38400 | CS8 | CLOCAL | CREAD;
-	options.c_iflag = IGNPAR;
-	options.c_oflag = 0;
-	options.c_lflag = 0;
+//	options.c_iflag = IGNPAR;
+//	options.c_oflag = 0;
+//	options.c_lflag = 0;
 	tcflush(fd_uart, TCIFLUSH);
 
     cfmakeraw(&options);
@@ -74,7 +74,7 @@ void UART_IO::getNextMidiMsg(){
 	uint8_t byte[3], counter = 0, counter2 = 0, temp = 0,  channel, *ptr = nullptr;
 	MidiMessage msg;
 
-	printf("-------------------\n");
+	//printf("----------%s---------\n", device_uart.c_str());
 
 	if((temp = read(fd_uart, byte, 1)) != 1){
         //printf("bytes received = %d (0x%x)\n", temp, byte[0]);

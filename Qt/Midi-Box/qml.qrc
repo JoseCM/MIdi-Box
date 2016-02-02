@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>Chain.qml</file>
+        <file>media-record.png</file>
+        <file>Block.qml</file>
+    </qresource>
+</RCC>
