@@ -11,8 +11,8 @@
 	"MIDI_MsgBuffer.h"
 	<vector>
 
-1453245651 /home/josemar/Desktop/Midi-Box/Inc/MIDI_MsgBuffer.h
-	"MIDI_Library/MidiMessage.h"
+1453904287 /home/josemar/Desktop/Midi-Box/Inc/MIDI_MsgBuffer.h
+	"MidiMessage.h"
 	<list>
 	<pthread.h>
 
@@ -47,7 +47,7 @@
 	<fcntl.h>
 	<string.h>
 
-1453657113 source:/home/josemar/Desktop/Midi-Box/Src/main.cpp
+1454527001 source:/home/josemar/Desktop/Midi-Box/Src/main.cpp
 	<pthread.h>
 	<unistd.h>
 	"MIDI_IO.h"
@@ -56,7 +56,7 @@
 	"MIDI_Chain.h"
 	"MIDI_IOBlock.h"
 
-1453653594 /home/josemar/Desktop/Midi-Box/Inc/Physical_IO.h
+1453848217 /home/josemar/Desktop/Midi-Box/Inc/Physical_IO.h
 	"MIDI_IO.h"
 	"TrellisI2C.h"
 	<string>
@@ -72,7 +72,7 @@
 	"MIDI_MsgBuffer.h"
 	<pthread.h>
 
-1453667771 source:/home/josemar/Desktop/Midi-Box/Src/Physical_IO.cpp
+1454526999 source:/home/josemar/Desktop/Midi-Box/Src/Physical_IO.cpp
 	"Physical_IO.h"
 	<unistd.h>
 	<fcntl.h>
@@ -93,7 +93,7 @@
 	<fcntl.h>
 	<sys/ioctl.h>
 
-1453809427 source:/home/josemar/Desktop/Midi-Box/Src/UART_IO.cpp
+1453910351 source:/home/josemar/Desktop/Midi-Box/Src/UART_IO.cpp
 	"UART_IO.h"
 	<iostream>
 	<cstdint>
@@ -123,11 +123,11 @@
 	"MidiMessage.h"
 	"MIDI_MsgBuffer.h"
 
-1453651289 source:/home/josemar/Desktop/Midi-Box/Src/MIDI_ChainBlock.cpp
+1453840720 source:/home/josemar/Desktop/Midi-Box/Src/MIDI_ChainBlock.cpp
 	"MIDI_ChainBlock.h"
 	"MIDI_Chain.h"
 
-1453807142 source:/home/josemar/Desktop/Midi-Box/Src/MIDI_IOBlock.cpp
+1453839840 source:/home/josemar/Desktop/Midi-Box/Src/MIDI_IOBlock.cpp
 	"MIDI_IOBlock.h"
 	<iostream>
 	<stdio.h>

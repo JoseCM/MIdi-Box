@@ -30,8 +30,11 @@ Physical_IO::Physical_IO(string device_i2c, string device_spi): MIDI_IO()
 
 	//set encoder mapping
 	encoderMap.assign(4, MidiMessage() );
-	for(int i = 0; i < 4; i++)
-		encoderMap[i].setCommand(0xB0, i+1, 0);
+	//for(int i = 0; i < 4; i++)
+    encoderMap[0].setCommand(0xB0, 40, 0);
+    encoderMap[1].setCommand(0xB0, 41, 0);
+    encoderMap[2].setCommand(0xB0, 42, 0);
+    encoderMap[3].setCommand(0xB0, 48, 0);
 
 	for(int i = 0; i < 4; i++)
 		encoder_value[i] = 63.5;
