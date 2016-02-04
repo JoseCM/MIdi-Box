@@ -23,6 +23,7 @@ Window {
     Rectangle {
 
         id: chainBox
+        objectName: "chainBox"
         color: "yellow"
 
         border.color: "black"
@@ -33,32 +34,35 @@ Window {
         width: 420
         anchors.centerIn: parent
 
-        GridLayout {
-
-            id: colunas
-            rowSpacing: 0
+        ColumnLayout {
+            id: chainColumns
+            objectName: "chainColumns"
+            spacing: 1
             anchors.top: parent.top
             anchors.left: parent.left
             anchors.right: parent.right
+            width: parent.width
 
+            /*
             Chain {
+                objectName: "chain1"
                 Block {
 
                 }
             }
 
+
             Chain {
+                objectName: "chain2"
                 color: "blue"
                 Layout.row: 2
             }
+            */
 
         }
 
-        Chain {
-            parent: colunas
-            color: "green"
-            Layout.row: 1
-        }
 
     }
+
+
 }

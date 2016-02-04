@@ -5,7 +5,7 @@ import QtQuick.Layouts 1.1
 Rectangle {
 
         color: "red"
-        //Layout.alignment: Qt.AlignTop
+        Layout.alignment: Qt.AlignTop
         Layout.preferredHeight: 60
         Layout.preferredWidth: parent.width
         border.color: "black"
@@ -13,9 +13,9 @@ Rectangle {
         anchors.margins: 2
         radius: 5
 
-        RowLayout {
+        //RowLayout {
 
-        }
+       // }
 
         Rectangle {
 
