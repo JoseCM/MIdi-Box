@@ -1,7 +1,7 @@
 import QtQuick 2.3
 import QtQuick.Window 2.2
 import QtQuick.Layouts 1.1
-import QtQuick.Controls 1.1
+import QtQuick.Controls 1.2
 
 Window {
 
@@ -22,43 +22,48 @@ Window {
 
     Rectangle {
 
-        id: chainBox
-        color: "yellow"
+            id: chainBox
+            color: "yellow"
 
-        border.color: "black"
-        border.width: 2
-        radius: 5
+            border.color: "black"
+            border.width: 2
+            radius: 5
 
-        height: 500
-        width: 420
-        anchors.centerIn: parent
+            height: 100
+            width: 420
+            anchors.centerIn: parent
 
-        GridLayout {
+//            ListView {
 
-            id: colunas
-            rowSpacing: 0
-            anchors.top: parent.top
-            anchors.left: parent.left
-            anchors.right: parent.right
+//                id: colunas
+////                anchors.top: parent.top
+////                anchors.left: parent.left
+////                anchors.right: parent.right
+////                width: parent.width
+////                height: parent.height
+//                anchors.fill: parent
+//                delegate: Chain {}
+//                focus: true
+//                highlight: Rectangle { color: "purple"; radius: 5}
+//                model: ListModel {
 
-            Chain {
-                Block {
+//                    ListElement {
+//                        colorname: "black"
+//                    }
 
+//                }
+
+//            }
+            ListView {
+
+                anchors.fill: parent
+                delegate: Chain { color: clr }
+                model: ListModel {
+                    ListElement{ clr: "blue" }
+                    ListElement{ clr: "red" }
+//                    ListElement{}
                 }
+
             }
-
-            Chain {
-                color: "blue"
-                Layout.row: 2
-            }
-
-        }
-
-        Chain {
-            parent: colunas
-            color: "green"
-            Layout.row: 1
-        }
-
     }
 }

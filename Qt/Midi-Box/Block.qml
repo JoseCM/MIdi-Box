@@ -11,6 +11,8 @@ Rectangle {
     anchors.top: parent.top
     anchors.bottom: parent.bottom
     anchors.margins: 5
+    anchors.rightMargin: 5
+    anchors.leftMargin: 5
     width: 80
 
     MouseArea {
