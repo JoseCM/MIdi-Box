@@ -5,10 +5,16 @@ Rectangle {
 
 
         color: "red"
+
+        Layout.alignment: Qt.AlignTop
+        Layout.preferredHeight: 60
+        Layout.preferredWidth: parent.width
+
         border.color: "black"
         border.width: 2
         anchors.margins: 2
         radius: 5
+
         width: parent.width
         height: 60
 
@@ -22,6 +28,7 @@ Rectangle {
                 ListElement {clr : "pink"}
             }
         }
+
 
         Rectangle {
 

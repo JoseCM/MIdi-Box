@@ -22,16 +22,17 @@ Window {
 
     Rectangle {
 
-            id: chainBox
-            color: "yellow"
+        id: chainBox
+        objectName: "chainBox"
+        color: "yellow"
 
-            border.color: "black"
-            border.width: 2
-            radius: 5
+        border.color: "black"
+        border.width: 2
+        radius: 5
 
-            height: 100
-            width: 420
-            anchors.centerIn: parent
+        height: 100
+        width: 420
+        anchors.centerIn: parent
 
 //            ListView {
 
@@ -53,7 +54,6 @@ Window {
 
 //                }
 
-//            }
             ListView {
 
                 anchors.fill: parent
@@ -66,4 +66,6 @@ Window {
 
             }
     }
+
+
 }
