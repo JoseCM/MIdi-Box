@@ -48,15 +48,15 @@ void MidiBox::addNewChain(MIDI_IO_TYPE input, int channel_in , MIDI_IO_TYPE outp
             break;
     };
 
-    if(in && out && chain)
-    {
+
+
         MIDI_Chain *chain = new MIDI_Chain(in, out);
 
         chainList.push_back(chain);
 
         in->run();
         out->run();
-    }
+
 }
 
 void MidiBox::removeChain(int index){

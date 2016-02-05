@@ -2,7 +2,11 @@
     <qresource prefix="/">
         <file>main.qml</file>
         <file>Chain.qml</file>
-        <file>media-record.png</file>
         <file>Block.qml</file>
+        <file>images/recordon.png</file>
+        <file>images/recordoff.png</file>
+        <file>images/stop.png</file>
+        <file>images/play.png</file>
+        <file>images/pause.png</file>
     </qresource>
 </RCC>
