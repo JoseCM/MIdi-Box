@@ -26,24 +26,27 @@ Rectangle {
 
         MenuItem {
             text: "Add Block to Right"
-//            onTriggered: ...
+            onTriggered: chain.addBlockRight(chainID, blockID, "")
         }
 
         MenuItem {
             text: "Add Block to Left"
-//            onTriggered: ...
+            onTriggered: chain.addBlockLeft(chainID, blockID, "")
         }
 
         MenuItem {
             text: "Remove Block"
+            onTriggered: chain.removeBlock(chainID, blockID)
         }
 
         MenuItem {
             text: "Edit Block"
+//            onTriggered:
         }
 
         MenuItem {
             text: "Remove Chain"
+            onTriggered: addChainDialog.removeChain(chainID)
         }
 
     }

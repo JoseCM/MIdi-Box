@@ -6,6 +6,7 @@ import QtQuick.Dialogs 1.2
 
 Window {
 
+    id: mainWindow
     visible: true
     color: "lightsteelblue"
     minimumHeight: 640
@@ -30,6 +31,7 @@ Window {
     Window {
 
         id: addChainDialog
+        objectName: "addChain"
         minimumHeight: 200
         maximumHeight: 200
         minimumWidth: 320
@@ -38,85 +40,115 @@ Window {
 
         property int chaincount: 0
         signal addChainSignal(int input, int inputchannel,  int output, int outputchanel)
+        signal removeChainSignal(int position)
 
-            Label {
-                id: inputLabel
-                text: "INPUT:"
-                x: 50
-                y: 20
+        function getChainPos(id){
+
+            for(var i = 0; i < chainModel.count; i++)
+               if(chainModel.get(i).chainid == id)
+                   return i
+
+            return -1
+
+        }
+
+        function addChain() {
+
+            var input = inputType.currentIndex
+            var output = outputType.currentIndex
+            var inchannel =  parseInt(inputChannel.currentText)
+            var outchannel = parseInt(outputChannel.currentText)
+
+            //var array = outputChannel.model
+            //arrayay.splice(3, 1)
+            //outputChannel.model = array
+
+            chainModel.append({"chainid": addChainDialog.chaincount})
+            chainView.currentIndex = chainModel.count - 1
+            chainView.currentItem.addBlock(0,"IN\n" + inputType.currentText + "-" + inputChannel.currentText)
+            chainView.currentItem.addBlock(1, "OUT\n" + outputType.currentText + "-" + outputChannel.currentText)
+
+            addChainDialog.chaincount = addChainDialog.chaincount + 1
+            addChainDialog.hide()
+
+            addChainDialog.addChainSignal(input, inchannel , output, outchannel)
+
+        }
+
+        function removeChain(id) {
+
+            var pos = addChainDialog.getChainPos(id)
+
+            if(pos != -1){
+                chainModel.remove(pos, 1)
+                addChainDialog.removeChainSignal(pos)
             }
+        }
 
-            ComboBox {
-                id: inputType
-                anchors.top: inputLabel.bottom
-                anchors.left: inputLabel.left
-                anchors.topMargin: 10
-                model: ["MIDI", "USB", "PHYS"]
+        Label {
+            id: inputLabel
+            text: "INPUT:"
+            x: 50
+            y: 20
+        }
+
+        ComboBox {
+            id: inputType
+            anchors.top: inputLabel.bottom
+            anchors.left: inputLabel.left
+            anchors.topMargin: 10
+            model: ["MIDI", "USB", "PHYS"]
+        }
+
+        ComboBox {
+            id: inputChannel
+            anchors.top: inputType.bottom
+            anchors.left: inputType.left
+            anchors.topMargin: 10
+            model: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 ,13, 14, 15, 16]
+        }
+
+        Label {
+            id: outputLabel
+            text: "OUTPUT:"
+            anchors.left: inputLabel.right
+            anchors.leftMargin: 80
+            anchors.top: inputLabel.top
+        }
+
+        ComboBox {
+            id: outputType
+            anchors.top: outputLabel.bottom
+            anchors.left: outputLabel.left
+            anchors.topMargin: 10
+            model: ["MIDI", "USB"]
+        }
+
+        ComboBox {
+            id: outputChannel
+            anchors.top: outputType.bottom
+            anchors.left: outputType.left
+            anchors.topMargin: 10
+            model: [1 ,2 ,3 ,4 ,5 ,6 ,7 ,8, 9, 10, 11, 12, 13, 14, 15 ,16]
+        }
+
+        Button {
+            text: "OK"
+            anchors.right: cancelButton.left
+            anchors.rightMargin: 10
+            anchors.top: cancelButton.top
+            onClicked: {
+                addChainDialog.addChain()
             }
+        }
 
-            ComboBox {
-                id: inputChannel
-                anchors.top: inputType.bottom
-                anchors.left: inputType.left
-                anchors.topMargin: 10
-                model: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 ,13, 14, 15, 16]
-            }
-
-            Label {
-                id: outputLabel
-                text: "OUTPUT:"
-                anchors.left: inputLabel.right
-                anchors.leftMargin: 80
-                anchors.top: inputLabel.top
-            }
-
-            ComboBox {
-                id: outputType
-                anchors.top: outputLabel.bottom
-                anchors.left: outputLabel.left
-                anchors.topMargin: 10
-                model: ["MIDI", "USB"]
-            }
-
-            ComboBox {
-                id: outputChannel
-                anchors.top: outputType.bottom
-                anchors.left: outputType.left
-                anchors.topMargin: 10
-                model: [1 ,2 ,3 ,4 ,5 ,6 ,7 ,8, 9, 10, 11, 12, 13, 14, 15 ,16]
-            }
-
-            Button {
-                text: "OK"
-                anchors.right: cancelButton.left
-                anchors.rightMargin: 10
-                anchors.top: cancelButton.top
-                onClicked: {
-                    var array = outputChannel.model
-
-                    var inchannel =  parseInt(inputChannel.currentText)
-                    var outchannel = parseInt(outputChannel.currentText)
-                    addChainDialog.addChainSignal(inputType.currentIndex, inchannel , outputType.currentIndex, outchannel)
-                    array.splice(3, 1)
-                    outputChannel.model = array
-
-                    chainList.append({"chainid": addChainDialog.chaincount})
-                    chainView.currentIndex = chainList.count - 1
-                    chainView.currentItem.addBlock(0,"IN\n" + inputType.currentText + "-" + inputChannel.currentText)
-                    chainView.currentItem.addBlock(1, "OUT\n" + outputType.currentText + "-" + outputChannel.currentText)
-
-                    addChainDialog.chaincount = addChainDialog.chaincount + 1
-                    addChainDialog.hide()
-                }
-            }
-
-            Button {
-                id: cancelButton
-                text: "Cancel"
-                x: 200
-                y: 150
-                onClicked: addChainDialog.hide()
-            }
+        Button {
+            id: cancelButton
+            text: "Cancel"
+            x: 200
+            y: 150
+            onClicked: addChainDialog.hide()
+        }
 
     }
 
@@ -140,7 +172,7 @@ Window {
                 anchors.fill: parent
                 delegate: Chain { chainID: chainid }
                 model: ListModel {
-                    id: chainList
+                    id: chainModel
                 }
 
             }
@@ -148,6 +180,7 @@ Window {
 
     Rectangle {
 
+        id: recordBox
         color: "transparent"
         border.color: "black"
         border.width: 2
@@ -156,8 +189,6 @@ Window {
         height: 500
         width: 420
         anchors.centerIn: parent
-
-
 
     }
 
