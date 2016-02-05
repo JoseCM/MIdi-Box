@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
     QQuickWindow *window = qobject_cast<QQuickWindow *>(engine.rootObjects().at(0));
    // window->show();
 
-    midi_box = new MidiBox(window, &engine);
+    midi_box = new MidiBox(window);
 
     return app.exec();
 }

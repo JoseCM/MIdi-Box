@@ -30,6 +30,10 @@ MIDI_Chain* MIDI_ChainBlock::getMotherChain()
     return motherChain;
 }
 
+MidiMessage MIDI_ChainBlock::getMidiMsg(void){
+    return inBuffer.readMidiMsg();
+}
+
 
 void MIDI_ChainBlock::passMidiMsg(MidiMessage &msg)
 {

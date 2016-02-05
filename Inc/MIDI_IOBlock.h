@@ -8,8 +8,9 @@ class MIDI_IO;
 
 class MIDI_IOBlock : public MIDI_ChainBlock
 {
-    uint8_t midiChannel;
-    MIDI_IO *io_stream;
+    protected:
+        uint8_t midiChannel;
+        MIDI_IO *io_stream;
 
     public:
         MIDI_IOBlock(uint8_t channel = 0, MIDI_IO *io = nullptr);
@@ -28,6 +29,7 @@ class MIDI_InBlock : public MIDI_IOBlock
         virtual ~MIDI_InBlock();
 
         virtual void run();
+        virtual void cancel();
         static void* Thread_In(void*);
 
 };
@@ -36,10 +38,11 @@ class MIDI_OutBlock : public MIDI_IOBlock
 {
 
     public:
-        MIDI_OutBlock(uint8_t channel = 0, MIDI_IO *in = nullptr);
+        MIDI_OutBlock(uint8_t channel = 0, MIDI_IO *out = nullptr);
         virtual ~MIDI_OutBlock();
 
         virtual void run();
+        virtual void cancel();
         static void* Thread_Out(void*);
 
 };

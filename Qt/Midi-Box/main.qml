@@ -53,19 +53,24 @@ Window {
 //                    }
 
 //                }
-
+            /*
             ListView {
 
                 anchors.fill: parent
                 delegate: Chain { color: clr }
                 model: ListModel {
-                    ListElement{ clr: "blue" }
-                    ListElement{ clr: "red" }
-//                    ListElement{}
+                    objectName: "chainListModel"
+                    //ListElement{ clr: "blue" }
                 }
+            }
+            */
 
+            ListView {
+                anchors.fill: parent
+                model: mymodel
+                delegate: Chain {
+                    color: model.modelData.color
+                }
             }
     }
-
-
 }

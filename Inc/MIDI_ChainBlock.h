@@ -23,10 +23,12 @@ class MIDI_ChainBlock
         void setMotherChain(MIDI_Chain *);
         void setNextBlock(MIDI_ChainBlock *next);
 
+        MidiMessage getMidiMsg(void);
         void passMidiMsg(MidiMessage &msg);
         virtual void ProcessMsg(MidiMessage&) { }
 
         virtual void run() = 0;
+        virtual void cancel()= 0;
 
         virtual ~MIDI_ChainBlock();
 };

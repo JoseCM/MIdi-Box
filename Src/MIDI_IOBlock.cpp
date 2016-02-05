@@ -57,6 +57,10 @@ void* MIDI_InBlock::Thread_In(void *argument)
     if((chain = io_block->getMotherChain()) == nullptr)
         pthread_exit(nullptr);
 
+    pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
+    pthread_setcanceltype(PTHREAD_CANCEL_DEFERRED, NULL);
+
+
     while(1){
 
         if((io_stream = io_block->getIOStream()) == nullptr)
@@ -76,6 +80,11 @@ void MIDI_InBlock::run()
     pthread_create(&blockThread, NULL, MIDI_InBlock::Thread_In, static_cast<void*>(this));
 }
 
+void MIDI_InBlock::cancel(){
+    pthread_cancel(blockThread);
+    pthread_testcancel();
+}
+
 MIDI_OutBlock::MIDI_OutBlock(uint8_t channel, MIDI_IO* out) : MIDI_IOBlock(channel, out)
 {
 
@@ -91,6 +100,12 @@ void MIDI_OutBlock::run()
     pthread_create(&blockThread, NULL, MIDI_OutBlock::Thread_Out, static_cast<void*>(this));
 }
 
+
+void MIDI_OutBlock::cancel(){
+    pthread_cancel(blockThread);
+    pthread_testcancel();
+}
+
 void* MIDI_OutBlock::Thread_Out(void *argument)
 {
     MIDI_OutBlock *io_block = static_cast<MIDI_OutBlock*>(argument);
@@ -98,12 +113,14 @@ void* MIDI_OutBlock::Thread_Out(void *argument)
     MIDI_Chain *chain = nullptr;
     MidiMessage msg;
 
-
     if(!io_block)
         pthread_exit(nullptr);
 
     if(!(chain = io_block->getMotherChain()))
         pthread_exit(nullptr);
+
+    pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
+    pthread_setcanceltype(PTHREAD_CANCEL_DEFERRED, NULL);
 
     while(1){
 
@@ -111,6 +128,11 @@ void* MIDI_OutBlock::Thread_Out(void *argument)
 
         if((io_stream = io_block->getIOStream()) == nullptr)
             pthread_exit(nullptr);
+
+        //change channel
+        if ((msg[0] & 0xF0) != 0xF0)
+            msg[0] = (msg[0] & 0xF0) | (io_block->getChannel() & 0x0F);
+
 
         io_stream->writeOutMidiMsg(msg);
         //std::cout << "sent message" << std::endl;

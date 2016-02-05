@@ -12,7 +12,14 @@ MIDI_Chain::MIDI_Chain(MIDI_IOBlock *in, MIDI_IOBlock *out) :  inputBlock(in), o
 
 MIDI_Chain::~MIDI_Chain()
 {
-    //dtor
+    std::list<MIDI_ChainBlock*>::iterator it = processBlockList.begin();
+
+    while(it != processBlockList.end()){
+        (*it)->cancel();
+        delete *it;
+        it++;
+    }
+
 }
 
 void MIDI_Chain::insertBlock(int pos, MIDI_ChainBlock *block)
@@ -51,6 +58,9 @@ void MIDI_Chain::removeBlock(int pos)
     temp = *it;
     it++;
     temp->setNextBlock((*it)->getNextBlock());
+
+    (*it)->cancel();
+
     processBlockList.erase(it);
 
     unlockChain();
