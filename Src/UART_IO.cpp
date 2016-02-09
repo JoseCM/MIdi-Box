@@ -117,14 +117,18 @@ void UART_IO::sendNextMidiMsg(){
 
 	uint8_t byte[3], size;
 	MidiMessage msg = readOutMIdiMsg();
+    int i =0;
 
 	size = msg.getSize();
 
-	for(int i = 0; i < size; i++)
-		byte[i] = msg[i];
+    for(int i = 0; i < size; i++){
+        byte[i] = msg[i];
+        printf("%x ", byte[i]);
+    }
+    printf("\n");
 
-	write(fd_uart, byte, size);
-
+    i = write(fd_uart, byte, size);
+    printf("write: %d\n", i);
 }
 
 void* UART_IO::Thread_InMidi(void* arg)
