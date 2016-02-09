@@ -267,6 +267,11 @@ Window {
                      text: "PHYS"
                      exclusiveGroup: tabPositionGroup
                  }
+                 RadioButton {
+                     property int index: 3
+                     text: "FILE"
+                     exclusiveGroup: tabPositionGroup
+                 }
              }
          }
 
