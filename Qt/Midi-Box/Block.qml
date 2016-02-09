@@ -1,5 +1,6 @@
 import QtQuick 2.3
 import QtQuick.Controls 1.4
+import QtQuick.Layouts 1.1
 
 
 Rectangle {
@@ -20,45 +21,70 @@ Rectangle {
     anchors.leftMargin: 5
     width: 80
 
-    Menu {
 
+    ListMenu {
         id: blockMenu
+        height: 5 * 30
+        z: 2000
 
-        MenuItem {
-            text: "Add Block to Right"
-            onTriggered: chain.addBlockRight(chainID, blockID, "")
-        }
+        ColumnLayout {
 
-        MenuItem {
-            text: "Add Block to Left"
-            onTriggered: chain.addBlockLeft(chainID, blockID, "")
-        }
+            anchors.fill: parent
+            spacing: 0
 
-        MenuItem {
-            text: "Remove Block"
-            onTriggered: chain.removeBlock(chainID, blockID)
-        }
+            ListMenuItem {
+                txt: "Add Block to Right"
+                onSelected: {
+                   chain.addBlockRight(chainID, blockID, "")
+                    blockMenu.visible = false
+                }
+            }
 
-        MenuItem {
-            text: "Edit Block"
-//            onTriggered:
-        }
+            ListMenuItem {
+                txt: "Add Block to Left"
+                onSelected: {
+                    chain.addBlockLeft(chainID, blockID, "")
+                    blockMenu.visible = false
+                }
+            }
 
-        MenuItem {
-            text: "Remove Chain"
-            onTriggered: addChainDialog.removeChain(chainID)
+            ListMenuItem {
+                txt: "Remove Block"
+                onSelected: {
+                    chain.removeBlock(chainID, blockID)
+                    blockMenu.visible = false
+                }
+            }
+
+            ListMenuItem {
+                txt: "Edit Block"
+                onSelected: {
+                    // edit block
+                    blockMenu.visible = false
+                }
+            }
+
+            ListMenuItem {
+                txt: "Remove Chain"
+                onSelected: {
+                    addChainDialog.removeChain(chainID)
+                    blockMenu.visible = false
+                }
+            }
+
+
         }
 
     }
 
+
     MouseArea {
         anchors.fill: parent
         onClicked: {
-            blockMenu.popup()
-        }
-
-        onPressAndHold: {
-            //shows block dialog
+            mainWindow.menusDisappear()
+            blockMenu.x = mouseX
+            blockMenu.y = mouseY
+            blockMenu.visible = true
         }
     }
 

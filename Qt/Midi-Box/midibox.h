@@ -22,11 +22,13 @@
 #include "MIDI_Clock.h"
 
 
-enum MIDI_IO_TYPE {Interface, MIDI, USB, File};
+enum MIDI_IO_TYPE {MIDI, USB, Interface, File };
 enum MIDI_PROCESS_TYPE {Monitor, Scale};
 
 class MidiBox: public QObject
 {
+
+    Q_OBJECT
 
 private:
     Physical_IO	*phys_io;
@@ -42,9 +44,11 @@ private:
 public:
     MidiBox(QQuickWindow *win);
     ~MidiBox();
-    void addNewChain(MIDI_IO_TYPE input, int channel_in , MIDI_IO_TYPE output, int channel_out);
+
+public slots:
+    void addNewChain(int input, int channel_in , int output, int channel_out);
     void removeChain(int index);
-    void addBlockToChain(int chain, int index, MIDI_PROCESS_TYPE processblock);
+    void addBlockToChain(int chain, int index, int processblock);
     void removeBlockFromChain(int chain, int index);
 
     //ChainToRecord Register/Unregister

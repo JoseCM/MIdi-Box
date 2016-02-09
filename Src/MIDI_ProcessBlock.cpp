@@ -77,5 +77,4 @@ void MIDI_Scale::ProcessMsg(MidiMessage& msg)
 {
 
 
-
 }

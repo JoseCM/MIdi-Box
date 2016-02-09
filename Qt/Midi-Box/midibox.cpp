@@ -10,6 +10,16 @@ MidiBox::MidiBox(QQuickWindow *win){
 
     midi_clock = new MIDI_Clock();
 
+    QObject::connect(window, SIGNAL(addChainSignal(int, int, int, int)), this, SLOT(addNewChain(int , int, int , int)));
+    QObject::connect(window, SIGNAL(removeChainSignal(int)), this, SLOT(removeChain(int)));
+    QObject::connect(window, SIGNAL(addBlockSignal(int, int, int)), this, SLOT(addBlockToChain(int, int, int)));
+    QObject::connect(window, SIGNAL(removeBlockSignal(int, int)), this, SLOT(removeBlockFromChain(int, int)));
+
+    phys_io->run();
+    uart_io->run();
+    usb_io->run();
+
+
     struct mq_attr attr;
     attr.mq_maxmsg = 1000;
     attr.mq_msgsize = sizeof(MIDI_Chain*) + sizeof(MidiMessage);
@@ -26,9 +36,14 @@ MidiBox::~MidiBox() {
     mq_unlink("recorderqueue");
 }
 
-void MidiBox::addNewChain(MIDI_IO_TYPE input, int channel_in , MIDI_IO_TYPE output, int channel_out){
+void MidiBox::addNewChain(int input, int channel_in , int output, int channel_out){
 
     MIDI_InBlock *in;
+
+    qDebug() << "input " << input << " channel " << channel_in;
+    qDebug() << "output" << output << " channel" << channel_out;
+    channel_in--;
+    channel_out--;
 
     switch (input){
         case Interface:
@@ -64,9 +79,10 @@ void MidiBox::addNewChain(MIDI_IO_TYPE input, int channel_in , MIDI_IO_TYPE outp
     in->run();
     out->run();
 
+
     //FALTA: add chain to cahinlist of palyer
 
-
+    qDebug() << "Adding Chain...";
 }
 
 void MidiBox::removeChain(int index){
@@ -78,14 +94,18 @@ void MidiBox::removeChain(int index){
 
     chainList.erase(it1);
 
+
     //FALTA:
     //is input block a FILE_io? remove from player list
     //is chain register to record?? remove from recorder list
     //remover chain from chainlist of player
+
+    qDebug() << "Removing Chain...";
+
 }
 
 
-void MidiBox::addBlockToChain(int chain, int index, MIDI_PROCESS_TYPE processblock){
+void MidiBox::addBlockToChain(int chain, int index, int processblock){
 
     MIDI_ProcessBlock *block;
 
@@ -107,6 +127,8 @@ void MidiBox::addBlockToChain(int chain, int index, MIDI_PROCESS_TYPE processblo
         (*it1)->insertBlock(index, block);
         block->run();
     }
+
+    qDebug() << "Adding block to chain...";
 }
 
 
@@ -116,5 +138,8 @@ void MidiBox::removeBlockFromChain(int chain, int index){
     std::advance(it1, chain);
 
     (*it1)->removeBlock(index);
-    //thread cancelled in removeBlock  
+    //thread cancelled in removeBlock
+
+    qDebug() << "Removing block to chain...";
+
 }

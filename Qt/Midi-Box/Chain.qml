@@ -1,6 +1,7 @@
 import QtQuick 2.5
 import QtQuick.Layouts 1.1
 import QtQuick.Controls 1.4
+import QtQuick.Controls.Styles 1.4
 
 Rectangle {
 
@@ -16,13 +17,11 @@ Rectangle {
         radius: 5
         width: parent.width
         height: 60
+        z: -chainID
 
         property int chainID
         property int blockcount: 0
         property ListView blockView: blockView
-
-        signal addBlockSignal(int chain, int block, int type)
-        signal removeBlockSignal(int chain, int block)
 
         function getBlockPos(chain, block){
 
@@ -32,7 +31,6 @@ Rectangle {
             for(var i = 0; i < chainModel.count; i++)
                 if(chainModel.get(i).chainid == chain){
                     chainpos = i
-                    console.log("chainpos ", chainpos )
                     break
                 }
 
@@ -42,7 +40,6 @@ Rectangle {
             for(var i = 0; i < blockModel.count; i++)
                 if(blockModel.get(i).blockid == block){
                     blockpos = i
-                    console.log("blockpos ", blockpos )
                     break
                 }
 
@@ -77,12 +74,17 @@ Rectangle {
         }
 
         function addBlock(pos, text) {
-            blockModel.insert(pos, {"blockid": blockcount, "chainid": chain.chainID, "textstr": text})
-            blockcount = blockcount + 1
 
             var chainpos = addChainDialog.getChainPos(chainID)
 
-            chain.addBlockSignal(chainpos, pos, 0)
+            if(pos != 0 && pos != blockModel.count){
+                 mainWindow.addBlockSignal(chainpos, pos, 0)
+                 console.log("adding block ", pos)
+            }
+            blockModel.insert(pos, {"blockid": blockcount, "chainid": chain.chainID, "textstr": text})
+            blockcount = blockcount + 1
+
+
         }
 
         function removeBlock(chain, block){
@@ -102,12 +104,23 @@ Rectangle {
             blockModel.remove(pos, 1)
 
             var chainpos = addChainDialog.getChainPos(chainID)
-            chain.removeBlockSignal(chainpos, pos)
+            mainWindow.removeBlockSignal(chainpos, pos)
+            console.log("removing block ", pos, " -chain ", chainpos)
         }
+
+        Rectangle {
+
+            anchors.fill: parent
+            color: "transparent"
+            border.color: "black"
+            border.width: 2
+
+        }
+
 
          ListView {
             id: blockView
-            clip: true
+            //clip: true
             anchors.fill: parent
             anchors.rightMargin: recordButton.width
             orientation: Qt.Horizontal
@@ -121,35 +134,23 @@ Rectangle {
                 id: blockModel
             }
 
-            Menu {
-
-                id: chainMenu
-
-                MenuItem {
-                    text: "Add Block"
-                    onTriggered: {
-                        addBlock(blockModel.count - 1, "PROCESS")
-                    }
-                }
-
-                MenuItem {
-                    text: "Remove Chain"
-                    onTriggered: {
-                       addChainDialog.removeChain(chainID)
-                    }
-                }
-
-            }
 
             MouseArea {
                 z: - 1
                 anchors.fill: parent
-                onClicked: {
-                    chainMenu.popup()
+                anchors.leftMargin: recordButton.width
+                onClicked:{
+                    //chainMenu.popup()
+                    mainWindow.menusDisappear()
+                    chchainmenu.x = mouseX
+                    chchainmenu.y = mouseY
+                    chchainmenu.visible = true
                 }
+
                 onPressAndHold: {
                     //shows block dialog
                 }
+
             }
 
         }
@@ -163,7 +164,7 @@ Rectangle {
             anchors.bottom: parent.bottom
             border.color: "black"
             border.width: 2
-            width: 50
+            width: 80
 
             Image {
                 id: recordImage
@@ -174,18 +175,56 @@ Rectangle {
 
             MouseArea {
                 anchors.fill: parent
+                onClicked: {
+
+                    var pos = addChainDialog.getChainPos(chainID)
+
+                    if(Qt.colorEqual(parent.color, "steelblue")){
+                        parent.color = "red"
+                        mainWindow.armChain(pos)
+                        console.log("arm chain - ", pos)
+                    } else {
+                        parent.color = "steelblue"
+                        mainWindow.disarmChain(pos)
+                        console.log("disarm chain - ", pos)
+                    }
+
+                }
             }
 
         }
 
-        Rectangle {
 
-            anchors.fill: parent
-            color: "transparent"
-            border.color: "black"
-            border.width: 2
+
+        ListMenu {
+            id: chchainmenu
+            height: 2 * 30
+            z: 2000
+
+            ColumnLayout {
+
+                anchors.fill: parent
+                spacing: 0
+
+                ListMenuItem {
+                    txt: "Add Block"
+                    onSelected: {
+                        addBlock(blockModel.count - 1, "PROCESS")
+                        chchainmenu.visible = false
+                    }
+                }
+
+                ListMenuItem {
+                    txt: "Remove Chain"
+                    onSelected: {
+                        addChainDialog.removeChain(chainID)
+                        chchainmenu.visible = false
+                    }
+                }
+            }
 
         }
+
 
 
 }
