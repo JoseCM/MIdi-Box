@@ -8,5 +8,7 @@
         <file>images/stop.png</file>
         <file>images/play.png</file>
         <file>images/pause.png</file>
+        <file>ListMenu.qml</file>
+        <file>ListMenuItem.qml</file>
     </qresource>
 </RCC>

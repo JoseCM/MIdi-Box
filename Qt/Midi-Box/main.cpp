@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 
     QQuickWindow *window = qobject_cast<QQuickWindow *>(engine.rootObjects().at(0));
-   // window->show();
+    window->show();
 
     midi_box = new MidiBox(window);
 

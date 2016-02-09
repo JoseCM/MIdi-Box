@@ -164,8 +164,8 @@ uint8_t Physical_IO::updateEncoderState(){
 
 		uint8_t status = 0;
 
-		if(read(fd_spi, &encoder_state, 1) != 1)
-			printf("Not reading...\n");
+        if(read(fd_spi, &encoder_state, 1) != 1);
+            //printf("Not reading...\n");
 
 		for(int i = 0; i < 8; i+=2){
 
