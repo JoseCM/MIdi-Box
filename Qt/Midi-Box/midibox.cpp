@@ -8,13 +8,23 @@ MidiBox::MidiBox(QQuickWindow *win){
     uart_io = new UART_IO(UARTDEVICE);
     usb_io = new UART_IO(USBDEVICE);
 
-    phys_io->run();
-    uart_io->run();
-    usb_io->run();
+    midi_clock = new MIDI_Clock();
 
+    struct mq_attr attr;
+    attr.mq_maxmsg = 1000;
+    attr.mq_msgsize = sizeof(MIDI_Chain*) + sizeof(MidiMessage);
+
+    queue_recorder = mq_open("recorderqueue", O_CREAT | O_RDWR, S_IRWXU | S_IRWXG , attr);
+
+   // phys_io->run();
+   // uart_io->run();
+   // usb_io->run();
 }
 
-MidiBox::~MidiBox() { }
+MidiBox::~MidiBox() {
+    mq_close(queue_recorder);
+    mq_unlink("recorderqueue");
+}
 
 void MidiBox::addNewChain(MIDI_IO_TYPE input, int channel_in , MIDI_IO_TYPE output, int channel_out){
 
@@ -34,28 +44,28 @@ void MidiBox::addNewChain(MIDI_IO_TYPE input, int channel_in , MIDI_IO_TYPE outp
             break;
     };
 
-
     MIDI_OutBlock *out;
 
     switch (output){
         case MIDI:
-            out = new MIDI_OutBlock(channel_out, uart_io);
+            out = new MIDI_OutBlock(channel_out, uart_io, queue_recorder);
             break;
         case USB:
-            out = new MIDI_OutBlock(channel_out, usb_io);
+            out = new MIDI_OutBlock(channel_out, usb_io, queue_recorder);
             break;
         case File:
             break;
     };
 
+    MIDI_Chain *chain = new MIDI_Chain(in, out);
 
+    chainList.push_back(chain);
 
-        MIDI_Chain *chain = new MIDI_Chain(in, out);
+    in->run();
+    out->run();
 
-        chainList.push_back(chain);
+    //FALTA: add chain to cahinlist of palyer
 
-        in->run();
-        out->run();
 
 }
 
@@ -67,6 +77,11 @@ void MidiBox::removeChain(int index){
     delete (*it1);
 
     chainList.erase(it1);
+
+    //FALTA:
+    //is input block a FILE_io? remove from player list
+    //is chain register to record?? remove from recorder list
+    //remover chain from chainlist of player
 }
 
 
@@ -101,6 +116,5 @@ void MidiBox::removeBlockFromChain(int chain, int index){
     std::advance(it1, chain);
 
     (*it1)->removeBlock(index);
-    //thread cancelled in removeBlock
-
+    //thread cancelled in removeBlock  
 }

@@ -17,7 +17,7 @@ class UART_IO : public MIDI_IO
 	string device_uart;
 public:
 	UART_IO(string);
-	~UART_IO();
+    virtual ~UART_IO();
 	void getNextMidiMsg();
 	void sendNextMidiMsg();
 	uint8_t MIDI_GetNoParam(uint8_t status);

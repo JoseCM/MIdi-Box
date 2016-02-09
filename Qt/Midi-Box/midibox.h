@@ -15,9 +15,11 @@
 #include "MIDI_IO.h"
 #include "Physical_IO.h"
 #include "UART_IO.h"
+#include "FILE_IO.h"
 #include "MIDI_Chain.h"
 #include "MIDI_IOBlock.h"
 #include "MIDI_ProcessBlock.h"
+#include "MIDI_Clock.h"
 
 
 enum MIDI_IO_TYPE {Interface, MIDI, USB, File};
@@ -27,14 +29,15 @@ class MidiBox: public QObject
 {
 
 private:
-    QQuickWindow *window;
-
     Physical_IO	*phys_io;
     UART_IO *uart_io;
     UART_IO *usb_io;
+    MIDI_Clock *midi_clock;
 
+
+    QQuickWindow *window;
     list<MIDI_Chain*> chainList;
-
+    mqd_t queue_recorder;
 
 public:
     MidiBox(QQuickWindow *win);
@@ -43,6 +46,11 @@ public:
     void removeChain(int index);
     void addBlockToChain(int chain, int index, MIDI_PROCESS_TYPE processblock);
     void removeBlockFromChain(int chain, int index);
+
+    //ChainToRecord Register/Unregister
+    //Play On/Off
+    //set bpm
+
 
 };
 

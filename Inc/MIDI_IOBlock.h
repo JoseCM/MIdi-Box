@@ -4,6 +4,10 @@
 #include <cstdint>
 #include "MIDI_ChainBlock.h"
 
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <mqueue.h>
+
 class MIDI_IO;
 
 class MIDI_IOBlock : public MIDI_ChainBlock
@@ -36,10 +40,12 @@ class MIDI_InBlock : public MIDI_IOBlock
 
 class MIDI_OutBlock : public MIDI_IOBlock
 {
+    mqd_t queue_recorder;
 
     public:
-        MIDI_OutBlock(uint8_t channel = 0, MIDI_IO *out = nullptr);
+        MIDI_OutBlock(uint8_t channel = 0, MIDI_IO *out = nullptr, mqd_t queue = 0);
         virtual ~MIDI_OutBlock();
+        mqd_t getQueueRecorder();
 
         virtual void run();
         virtual void cancel();

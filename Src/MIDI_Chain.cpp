@@ -1,7 +1,9 @@
 #include "MIDI_Chain.h"
 #include "MIDI_IOBlock.h"
 
-MIDI_Chain::MIDI_Chain(MIDI_IOBlock *in, MIDI_IOBlock *out) :  inputBlock(in), outputBlock(out), chainMutex(PTHREAD_MUTEX_INITIALIZER)
+
+
+MIDI_Chain::MIDI_Chain(MIDI_IOBlock *in, MIDI_IOBlock *out) :  inputBlock(in), outputBlock(out), chainMutex(PTHREAD_MUTEX_INITIALIZER), isRecording(false)
 {
     processBlockList.push_back(static_cast<MIDI_ChainBlock*>(in));
     processBlockList.push_back(static_cast<MIDI_ChainBlock*>(out));
@@ -102,4 +104,20 @@ void MIDI_Chain::lockChain()
 void MIDI_Chain::unlockChain()
 {
     pthread_mutex_unlock(&chainMutex);
+}
+
+void MIDI_Chain::setRecordingState(bool state){
+    isRecording = state;
+}
+
+bool MIDI_Chain::getRecordingState(){
+    return isRecording;
+}
+
+MIDI_IOBlock*  MIDI_Chain::getOutputBlock(){
+    return outputBlock;
+}
+
+MIDI_IOBlock* MIDI_Chain::getInputBlock(){
+    return inputBlock;
 }

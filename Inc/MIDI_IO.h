@@ -20,7 +20,7 @@ protected:
 
 public:
 	MIDI_IO();
-	~MIDI_IO();
+    virtual ~MIDI_IO();
 	virtual bool open() = 0;
 	virtual bool close() = 0;
 
@@ -35,6 +35,9 @@ public:
 
 	virtual void run() = 0;
 };
+
+
+
 
 
 #endif

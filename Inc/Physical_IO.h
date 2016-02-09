@@ -25,7 +25,7 @@ class Physical_IO: public MIDI_IO
 
 public:
 	Physical_IO(string, string);
-	~Physical_IO();
+    virtual ~Physical_IO();
 	bool open();
 	bool close();
 	bool addMidiMsgtoButton(int, MidiMessage&);

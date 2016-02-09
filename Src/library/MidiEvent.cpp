@@ -61,6 +61,10 @@ MidiEvent::MidiEvent(const MidiEvent& mfevent) {
    }
 }
 
+MidiEvent::MidiEvent(int aTime, int aTrack, MidiMessage& message)
+     :MidiMessage(message) {
+}
+
 
 
 //////////////////////////////
@@ -237,6 +241,8 @@ int MidiEvent::getTickDuration(void) {
       return tick - tick2;
    }
 }
+
+
 
 
 

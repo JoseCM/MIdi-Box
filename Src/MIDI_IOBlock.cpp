@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <stdio.h>
+#include <cstring>
 #include "MIDI_IO.h"
 
 MIDI_IOBlock::MIDI_IOBlock(uint8_t channel, MIDI_IO* io) : midiChannel(channel), io_stream(io)
@@ -85,7 +86,7 @@ void MIDI_InBlock::cancel(){
     pthread_testcancel();
 }
 
-MIDI_OutBlock::MIDI_OutBlock(uint8_t channel, MIDI_IO* out) : MIDI_IOBlock(channel, out)
+MIDI_OutBlock::MIDI_OutBlock(uint8_t channel, MIDI_IO* out, mqd_t queue) : MIDI_IOBlock(channel, out), queue_recorder(queue)
 {
 
 }
@@ -94,6 +95,11 @@ MIDI_OutBlock::~MIDI_OutBlock()
 {
 
 }
+
+mqd_t MIDI_OutBlock::getQueueRecorder(){
+    return queue_recorder;
+}
+
 
 void MIDI_OutBlock::run()
 {
@@ -112,6 +118,16 @@ void* MIDI_OutBlock::Thread_Out(void *argument)
     MIDI_IO *io_stream = nullptr;
     MIDI_Chain *chain = nullptr;
     MidiMessage msg;
+
+    struct messageToRecord{
+        MIDI_Chain *chain;
+        MidiMessage msg;
+    };
+
+    messageToRecord message_s;
+    char message_v[50];
+
+    message_s.chain = chain;
 
     if(!io_block)
         pthread_exit(nullptr);
@@ -133,10 +149,14 @@ void* MIDI_OutBlock::Thread_Out(void *argument)
         if ((msg[0] & 0xF0) != 0xF0)
             msg[0] = (msg[0] & 0xF0) | (io_block->getChannel() & 0x0F);
 
+        if(chain->getRecordingState()){
+            message_s.msg = msg;
+            memcpy(message_v, &message_s, sizeof(message_s));
+            mq_send(io_block->getQueueRecorder(), message_v, sizeof(message_s), 0);
+        }
 
         io_stream->writeOutMidiMsg(msg);
         //std::cout << "sent message" << std::endl;
-
     }
 }
 

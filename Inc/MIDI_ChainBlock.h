@@ -4,8 +4,7 @@
 #include "MidiMessage.h"
 #include "MIDI_MsgBuffer.h"
 
-
-class MIDI_Chain;
+#include "MIDI_Chain.h"
 
 class MIDI_ChainBlock
 {
