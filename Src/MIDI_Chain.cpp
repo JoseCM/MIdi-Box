@@ -18,9 +18,15 @@ MIDI_Chain::~MIDI_Chain()
 
     while(it != processBlockList.end()){
         (*it)->cancel();
+        it++;
+    }
+
+    it = processBlockList.begin();
+    while(it != processBlockList.end()){
         delete *it;
         it++;
     }
+
 
 }
 

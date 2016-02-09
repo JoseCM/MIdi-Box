@@ -42,7 +42,7 @@ MIDI_InBlock::MIDI_InBlock(uint8_t channel, MIDI_IO* in) : MIDI_IOBlock(channel,
 
 MIDI_InBlock::~MIDI_InBlock()
 {
-
+    io_stream->unregisteChannel(getChannel());
 }
 
 void* MIDI_InBlock::Thread_In(void *argument)
@@ -68,7 +68,7 @@ void* MIDI_InBlock::Thread_In(void *argument)
             pthread_exit(nullptr);
 
         msg = io_stream->readInMidiMsg(io_block->getChannel());
-        //std::cout << "received message" << std::endl;
+        std::cout << "received message" << std::endl;
 
         io_block->passMidiMsg(msg);
 
@@ -93,7 +93,8 @@ MIDI_OutBlock::MIDI_OutBlock(uint8_t channel, MIDI_IO* out, mqd_t queue) : MIDI_
 
 MIDI_OutBlock::~MIDI_OutBlock()
 {
-
+    MidiMessage msg( 0xB0 | getChannel() , 123 , 0);
+    io_stream->writeOutMidiMsg(msg);
 }
 
 mqd_t MIDI_OutBlock::getQueueRecorder(){

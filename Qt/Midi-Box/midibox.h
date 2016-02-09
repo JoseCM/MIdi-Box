@@ -50,7 +50,9 @@ public slots:
     void removeChain(int index);
     void addBlockToChain(int chain, int index, int processblock);
     void removeBlockFromChain(int chain, int index);
-
+    void octaveUp();
+    void octaveDown();
+    void setBPM(int bpm);
     //ChainToRecord Register/Unregister
     //Play On/Off
     //set bpm

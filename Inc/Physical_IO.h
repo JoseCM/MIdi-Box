@@ -34,6 +34,8 @@ public:
 	MidiMessage& encoderToMidiMsg(int);
 	uint8_t updateEncoderState();
 	uint8_t updateButtonState();
+    void upOctave();
+    void downOctave();
 
     static void* Thread_InButton(void *arg);
     static void* Thread_InEncoder(void *arg);

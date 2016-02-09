@@ -158,6 +158,26 @@ MidiMessage& Physical_IO::encoderToMidiMsg(int encoder)
 	return msg;
 }
 
+void Physical_IO::upOctave(){
+
+    if(buttonMap[0].getP1() + 12 > 108)
+        return;
+
+    for(int i=0; i < 16; i++)
+        buttonMap[i].setP1(buttonMap[i].getP1() + 12);
+
+}
+
+void Physical_IO::downOctave(){
+    if(buttonMap[0].getP1() - 12 < 0)
+        return;
+
+    for(int i=0; i < 16; i++)
+        buttonMap[i].setP1(buttonMap[i].getP1() - 12);
+
+
+}
+
 uint8_t Physical_IO::updateEncoderState(){
 
 		static uint8_t encoder_state = 0xff, prev_encoder_state = 0xff, temp_prev, temp_new;

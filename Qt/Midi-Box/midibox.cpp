@@ -14,11 +14,9 @@ MidiBox::MidiBox(QQuickWindow *win){
     QObject::connect(window, SIGNAL(removeChainSignal(int)), this, SLOT(removeChain(int)));
     QObject::connect(window, SIGNAL(addBlockSignal(int, int, int)), this, SLOT(addBlockToChain(int, int, int)));
     QObject::connect(window, SIGNAL(removeBlockSignal(int, int)), this, SLOT(removeBlockFromChain(int, int)));
-
-    phys_io->run();
-    uart_io->run();
-    usb_io->run();
-
+    QObject::connect(window, SIGNAL(octaveUp()), this, SLOT(octaveUp()));
+    QObject::connect(window, SIGNAL(octaveDown()), this, SLOT(octaveDown()));
+    QObject::connect(window, SIGNAL(bpm(int)()), this, SLOT(setBPM(int)));
 
     struct mq_attr attr;
     attr.mq_maxmsg = 1000;
@@ -26,9 +24,9 @@ MidiBox::MidiBox(QQuickWindow *win){
 
     queue_recorder = mq_open("recorderqueue", O_CREAT | O_RDWR, S_IRWXU | S_IRWXG , attr);
 
-   // phys_io->run();
-   // uart_io->run();
-   // usb_io->run();
+    phys_io->run();
+    uart_io->run();
+    usb_io->run();
 }
 
 MidiBox::~MidiBox() {
@@ -56,6 +54,7 @@ void MidiBox::addNewChain(int input, int channel_in , int output, int channel_ou
             in = new MIDI_InBlock(channel_in, usb_io);
             break;
         case File:
+            in = new MIDI_InBlock(channel_in, new FILE_IO(std::to_string(chainList.size())));
             break;
     };
 
@@ -140,6 +139,18 @@ void MidiBox::removeBlockFromChain(int chain, int index){
     (*it1)->removeBlock(index);
     //thread cancelled in removeBlock
 
-    qDebug() << "Removing block to chain...";
+    qDebug() << "Removing to chain...";
 
+}
+
+void MidiBox::octaveUp(){
+    phys_io->upOctave();
+}
+
+void MidiBox::octaveDown(){
+    phys_io->downOctave();
+}
+
+void MidiBox::setBPM(int bpm){
+    midi_clock->setBMP(bpm);
 }
