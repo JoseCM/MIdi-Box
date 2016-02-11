@@ -20,6 +20,8 @@
 #include "MIDI_IOBlock.h"
 #include "MIDI_ProcessBlock.h"
 #include "MIDI_Clock.h"
+#include "MIDI_Player.h"
+#include "MIDI_Recorder.h"
 
 
 enum MIDI_IO_TYPE {MIDI, USB, Interface, File };
@@ -34,8 +36,10 @@ private:
     Physical_IO	*phys_io;
     UART_IO *uart_io;
     UART_IO *usb_io;
-    MIDI_Clock *midi_clock;
 
+    MIDI_Clock *midi_clock;
+    MIDI_Player *player;
+    MIDI_Recorder *recorder;
 
     QQuickWindow *window;
     list<MIDI_Chain*> chainList;
@@ -53,11 +57,10 @@ public slots:
     void octaveUp();
     void octaveDown();
     void setBPM(int bpm);
-    //ChainToRecord Register/Unregister
-    //Play On/Off
-    //set bpm
-
-
+    void play();
+    void stop();
+    void armChain(int);
+    void disarmChain(int);
 };
 
 #endif // MIDIBOX_H

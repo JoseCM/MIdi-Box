@@ -2,6 +2,15 @@
 
 MidiBox::MidiBox(QQuickWindow *win){
 
+
+    struct mq_attr attr;
+    attr.mq_maxmsg = 1000;
+    attr.mq_msgsize = sizeof(messageToRecord);
+
+    queue_recorder = mq_open("/recorderqueue", O_CREAT | O_RDWR, S_IRWXU | S_IRWXG , &attr);
+    if(queue_recorder == (mqd_t) -1)
+        perror("queue:");
+
     window = win;
 
     phys_io = new Physical_IO(I2CDEVICE, SPIDEVICE);
@@ -9,6 +18,8 @@ MidiBox::MidiBox(QQuickWindow *win){
     usb_io = new UART_IO(USBDEVICE);
 
     midi_clock = new MIDI_Clock();
+    player = new MIDI_Player(midi_clock, chainList);
+    recorder = new MIDI_Recorder(midi_clock, queue_recorder);
 
     QObject::connect(window, SIGNAL(addChainSignal(int, int, int, int)), this, SLOT(addNewChain(int , int, int , int)));
     QObject::connect(window, SIGNAL(removeChainSignal(int)), this, SLOT(removeChain(int)));
@@ -16,17 +27,17 @@ MidiBox::MidiBox(QQuickWindow *win){
     QObject::connect(window, SIGNAL(removeBlockSignal(int, int)), this, SLOT(removeBlockFromChain(int, int)));
     QObject::connect(window, SIGNAL(octaveUp()), this, SLOT(octaveUp()));
     QObject::connect(window, SIGNAL(octaveDown()), this, SLOT(octaveDown()));
-    QObject::connect(window, SIGNAL(bpm(int)()), this, SLOT(setBPM(int)));
-
-    struct mq_attr attr;
-    attr.mq_maxmsg = 1000;
-    attr.mq_msgsize = sizeof(MIDI_Chain*) + sizeof(MidiMessage);
-
-    queue_recorder = mq_open("recorderqueue", O_CREAT | O_RDWR, S_IRWXU | S_IRWXG , attr);
+    QObject::connect(window, SIGNAL(bpm(int)), this, SLOT(setBPM(int)));
+    QObject::connect(window, SIGNAL(play()), this, SLOT(play()));
+    QObject::connect(window, SIGNAL(stop()), this, SLOT(stop()));
+    QObject::connect(window, SIGNAL(armChain(int)), this, SLOT(armChain(int)));
+    QObject::connect(window, SIGNAL(disarmChain(int)), this, SLOT(disarmChain(int)));
 
     phys_io->run();
     uart_io->run();
     usb_io->run();
+    player->run();
+    recorder->run();
 }
 
 MidiBox::~MidiBox() {
@@ -37,6 +48,7 @@ MidiBox::~MidiBox() {
 void MidiBox::addNewChain(int input, int channel_in , int output, int channel_out){
 
     MIDI_InBlock *in;
+    FILE_IO *file;
 
     qDebug() << "input " << input << " channel " << channel_in;
     qDebug() << "output" << output << " channel" << channel_out;
@@ -54,7 +66,8 @@ void MidiBox::addNewChain(int input, int channel_in , int output, int channel_ou
             in = new MIDI_InBlock(channel_in, usb_io);
             break;
         case File:
-            in = new MIDI_InBlock(channel_in, new FILE_IO(std::to_string(chainList.size())));
+            file = new FILE_IO( std::to_string( chainList.size() ) );
+            in = new MIDI_InBlock(channel_in, file);
             break;
     };
 
@@ -67,19 +80,17 @@ void MidiBox::addNewChain(int input, int channel_in , int output, int channel_ou
         case USB:
             out = new MIDI_OutBlock(channel_out, usb_io, queue_recorder);
             break;
-        case File:
-            break;
     };
 
     MIDI_Chain *chain = new MIDI_Chain(in, out);
 
     chainList.push_back(chain);
 
+    if(input == File)
+        player->addChainToPlay(chain, file);
+
     in->run();
     out->run();
-
-
-    //FALTA: add chain to cahinlist of palyer
 
     qDebug() << "Adding Chain...";
 }
@@ -89,15 +100,16 @@ void MidiBox::removeChain(int index){
     std::list<MIDI_Chain*>::iterator it1 = chainList.begin();
     std::advance(it1, index);
 
+    if(dynamic_cast<FILE_IO*>((*it1)->getInputBlock()->getIOStream())){
+        player->removeChainFromPlay(*it1);
+    }
+
+    if((*it1)->getRecordingState()){
+        recorder->removeChainFromRecord(*it1);
+    }
+
     delete (*it1);
-
     chainList.erase(it1);
-
-
-    //FALTA:
-    //is input block a FILE_io? remove from player list
-    //is chain register to record?? remove from recorder list
-    //remover chain from chainlist of player
 
     qDebug() << "Removing Chain...";
 
@@ -154,3 +166,38 @@ void MidiBox::octaveDown(){
 void MidiBox::setBPM(int bpm){
     midi_clock->setBMP(bpm);
 }
+
+void MidiBox::play(){
+    recorder->clearFilesToRecord();
+    recorder->setRecordState(true);
+    player->start();
+    qDebug() << "play" << endl;
+}
+
+
+void MidiBox::stop(){
+    player->stop();
+    recorder->setRecordState(false);
+    recorder->closeFilesToRecord();
+    qDebug() << "stop" << endl;
+}
+
+void MidiBox::armChain(int chain){
+    std::list<MIDI_Chain*>::iterator it1 = chainList.begin();
+    std::advance(it1, chain);
+
+    (*it1)->setRecordingState(true);
+    recorder->addChainToRecord(*it1,std::to_string(chain));
+    qDebug() << "chain " << chain << "armed" << endl;
+}
+
+void MidiBox::disarmChain(int chain){
+    std::list<MIDI_Chain*>::iterator it1 = chainList.begin();
+    std::advance(it1, chain);
+
+    (*it1)->setRecordingState(false);
+    recorder->removeChainFromRecord(*it1);
+    qDebug() << "chain " << chain << "unarmed" << endl;
+}
+
+

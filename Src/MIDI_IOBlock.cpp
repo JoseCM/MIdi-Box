@@ -68,7 +68,7 @@ void* MIDI_InBlock::Thread_In(void *argument)
             pthread_exit(nullptr);
 
         msg = io_stream->readInMidiMsg(io_block->getChannel());
-        std::cout << "received message" << std::endl;
+       // std::cout << "received message" << std::endl;
 
         io_block->passMidiMsg(msg);
 
@@ -120,21 +120,16 @@ void* MIDI_OutBlock::Thread_Out(void *argument)
     MIDI_Chain *chain = nullptr;
     MidiMessage msg;
 
-    struct messageToRecord{
-        MIDI_Chain *chain;
-        MidiMessage msg;
-    };
-
     messageToRecord message_s;
     char message_v[50];
-
-    message_s.chain = chain;
 
     if(!io_block)
         pthread_exit(nullptr);
 
     if(!(chain = io_block->getMotherChain()))
         pthread_exit(nullptr);
+
+    message_s.chain = chain;
 
     pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
     pthread_setcanceltype(PTHREAD_CANCEL_DEFERRED, NULL);
@@ -150,14 +145,17 @@ void* MIDI_OutBlock::Thread_Out(void *argument)
         if ((msg[0] & 0xF0) != 0xF0)
             msg[0] = (msg[0] & 0xF0) | (io_block->getChannel() & 0x0F);
 
+        io_stream->writeOutMidiMsg(msg);
+
         if(chain->getRecordingState()){
             message_s.msg = msg;
             memcpy(message_v, &message_s, sizeof(message_s));
-            mq_send(io_block->getQueueRecorder(), message_v, sizeof(message_s), 0);
+
+            if(!mq_send(io_block->getQueueRecorder(), message_v, sizeof(message_s), 0))
+                perror("queue_sent");
+
         }
 
-        io_stream->writeOutMidiMsg(msg);
-        //std::cout << "sent message" << std::endl;
     }
 }
 

@@ -32,7 +32,7 @@ class MidiEvent : public MidiMessage {
                  MidiEvent     (int aTime, int aTrack, vector<uchar>& message);
                  MidiEvent     (const MidiMessage& message);
                  MidiEvent     (const MidiEvent& mfevent);
-                 MidiEvent     (int aTime, int aTrack, MidiMessage& message);
+                 //MidiEvent     (int aTime, int aTrack, MidiMessage& message);
 
                 ~MidiEvent     ();
 

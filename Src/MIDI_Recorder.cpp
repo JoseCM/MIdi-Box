@@ -8,6 +8,7 @@ MIDI_Recorder::MIDI_Recorder(MIDI_Clock* clk, mqd_t queue): clock(clk), isRecord
 }
 
 MIDI_Recorder::~MIDI_Recorder(){
+
 }
 
 
@@ -27,18 +28,36 @@ void MIDI_Recorder::removeChainFromRecord(MIDI_Chain* chain){
     it = filesToRecord.find(chain);
 
     if(it != filesToRecord.end()){
-        (*it).second->close(); //write midifile ("xxx.mid")
+        //(*it).second->close(); //write midifile ("xxx.mid")
         delete (*it).second;
         filesToRecord.erase(it);
     }
+}
 
+void MIDI_Recorder::clearFilesToRecord(){
+    map<MIDI_Chain*, FILE_IO*>::iterator it;
+
+    it = filesToRecord.begin();
+
+    if(it != filesToRecord.end()){
+        (*it).second->truncate();
+    }
+}
+
+void MIDI_Recorder::closeFilesToRecord(){
+    map<MIDI_Chain*, FILE_IO*>::iterator it;
+
+    it = filesToRecord.begin();
+
+    if(it != filesToRecord.end()){
+        (*it).second->close(); //write midifile ("xxx.mid")
+    }
 }
 
 void MIDI_Recorder::addEventToFile(MidiEvent event, MIDI_Chain *chain){
     map<MIDI_Chain*, FILE_IO*>::iterator it;
 
     it = filesToRecord.find(chain);
-
     if(it != filesToRecord.end()){
         (*it).second->addMidiEvent(event);
     }
@@ -56,34 +75,27 @@ bool MIDI_Recorder::getRecordState(){
     return isRecording;
 }
 
-
 mqd_t MIDI_Recorder::getQueueRecorder(){
     return queue_recorder;
 }
 
-
 void* MIDI_Recorder::Thread_Record(void *arg){
     MIDI_Recorder *midiRecorder = static_cast<MIDI_Recorder*>(arg);
 
-    struct messageToRecord{
-        MIDI_Chain *chain;
-        MidiMessage msg;
-    };
-
-    messageToRecord message_s;
-    char *message_v;
+    messageToRecord *message_s;
     ssize_t size;
     int tick;
 
     while(1){
-        size = mq_receive(midiRecorder->getQueueRecorder(), message_v, sizeof(messageToRecord), 0);
+        message_s = new messageToRecord();
+        size = mq_receive(midiRecorder->getQueueRecorder(), reinterpret_cast<char*>(message_s), sizeof(messageToRecord), 0);
 
-        if(midiRecorder->isRecording){
+        if( midiRecorder->getRecordState()){
             tick = midiRecorder->getTickCount();
-
+            //printf("tick:%x\n", tick);
             if(size == sizeof(messageToRecord)){
-                memcpy(&message_s, message_v, size);
-                midiRecorder->addEventToFile(MidiEvent(tick, 1, message_s.msg), message_s.chain);
+                //printf("queue_received\n");
+                midiRecorder->addEventToFile(MidiEvent(tick, 0, message_s->msg), message_s->chain);
             }
         }
     }

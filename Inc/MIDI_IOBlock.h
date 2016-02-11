@@ -8,6 +8,11 @@
 #include <sys/stat.h>
 #include <mqueue.h>
 
+struct messageToRecord{
+    MIDI_Chain *chain;
+    MidiMessage msg;
+};
+
 class MIDI_IO;
 
 class MIDI_IOBlock : public MIDI_ChainBlock

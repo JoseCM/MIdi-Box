@@ -5,6 +5,7 @@
 
 #include "MIDI_Clock.h"
 #include "MIDI_Chain.h"
+#include "MIDI_IOBlock.h"
 #include "FILE_IO.h"
 #include <string>
 #include <map>
@@ -29,6 +30,8 @@ public:
     void addChainToRecord(MIDI_Chain*, string fileName);
     void removeChainFromRecord(MIDI_Chain*);
     void addEventToFile(MidiEvent , MIDI_Chain *);
+    void clearFilesToRecord();
+    void closeFilesToRecord();
     int getTickCount();
     void setRecordState(bool);
     bool getRecordState();
