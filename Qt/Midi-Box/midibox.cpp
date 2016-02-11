@@ -1,5 +1,6 @@
 #include "midibox.h"
 
+
 MidiBox::MidiBox(QQuickWindow *win){
 
 
@@ -21,7 +22,7 @@ MidiBox::MidiBox(QQuickWindow *win){
     player = new MIDI_Player(midi_clock, chainList);
     recorder = new MIDI_Recorder(midi_clock, queue_recorder);
 
-    QObject::connect(window, SIGNAL(addChainSignal(int, int, int, int)), this, SLOT(addNewChain(int , int, int , int)));
+    QObject::connect(window, SIGNAL(addChainSignal(int, int, int, int, QString)), this, SLOT(addNewChain(int , int, int , int, QString)));
     QObject::connect(window, SIGNAL(removeChainSignal(int)), this, SLOT(removeChain(int)));
     QObject::connect(window, SIGNAL(addBlockSignal(int, int, int)), this, SLOT(addBlockToChain(int, int, int)));
     QObject::connect(window, SIGNAL(removeBlockSignal(int, int)), this, SLOT(removeBlockFromChain(int, int)));
@@ -30,14 +31,17 @@ MidiBox::MidiBox(QQuickWindow *win){
     QObject::connect(window, SIGNAL(bpm(int)), this, SLOT(setBPM(int)));
     QObject::connect(window, SIGNAL(play()), this, SLOT(play()));
     QObject::connect(window, SIGNAL(stop()), this, SLOT(stop()));
-    QObject::connect(window, SIGNAL(armChain(int)), this, SLOT(armChain(int)));
+    QObject::connect(window, SIGNAL(armChain(int, QString)), this, SLOT(armChain(int, QString)));
     QObject::connect(window, SIGNAL(disarmChain(int)), this, SLOT(disarmChain(int)));
+    QObject::connect(window, SIGNAL(updateFileModel()), this, SLOT(updateFileModel()));
 
     phys_io->run();
     uart_io->run();
     usb_io->run();
     player->run();
     recorder->run();
+
+
 }
 
 MidiBox::~MidiBox() {
@@ -45,13 +49,14 @@ MidiBox::~MidiBox() {
     mq_unlink("recorderqueue");
 }
 
-void MidiBox::addNewChain(int input, int channel_in , int output, int channel_out){
+void MidiBox::addNewChain(int input, int channel_in , int output, int channel_out, QString filename){
 
     MIDI_InBlock *in;
     FILE_IO *file;
 
     qDebug() << "input " << input << " channel " << channel_in;
     qDebug() << "output" << output << " channel" << channel_out;
+    qDebug() << "filename " << filename;
     channel_in--;
     channel_out--;
 
@@ -66,7 +71,7 @@ void MidiBox::addNewChain(int input, int channel_in , int output, int channel_ou
             in = new MIDI_InBlock(channel_in, usb_io);
             break;
         case File:
-            file = new FILE_IO( std::to_string( chainList.size() ) );
+            file = new FILE_IO( filename.toStdString() );
             in = new MIDI_InBlock(channel_in, file);
             break;
     };
@@ -182,12 +187,12 @@ void MidiBox::stop(){
     qDebug() << "stop" << endl;
 }
 
-void MidiBox::armChain(int chain){
+void MidiBox::armChain(int chain, QString filename){
     std::list<MIDI_Chain*>::iterator it1 = chainList.begin();
     std::advance(it1, chain);
 
     (*it1)->setRecordingState(true);
-    recorder->addChainToRecord(*it1,std::to_string(chain));
+    recorder->addChainToRecord(*it1, filename.toStdString());
     qDebug() << "chain " << chain << "armed" << endl;
 }
 
@@ -200,4 +205,21 @@ void MidiBox::disarmChain(int chain){
     qDebug() << "chain " << chain << "unarmed" << endl;
 }
 
+void MidiBox::updateFileModel(){
+
+    QDirIterator it("./MIDIFiles");
+
+    qDebug() << "updating files..";
+    fileModel.clear();
+
+    while(it.hasNext()){
+        it.next();
+        if(it.fileName().at(0) != '.')
+            fileModel << it.fileName();
+    }
+
+    QObject *obj = window->findChild<QObject*>("fileView");
+    obj->setProperty("model", fileModel);
+
+}
 

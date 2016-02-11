@@ -10,5 +10,8 @@
         <file>images/pause.png</file>
         <file>ListMenu.qml</file>
         <file>ListMenuItem.qml</file>
+        <file>Keyboard.qml</file>
+        <file>KeyboardButton.qml</file>
+        <file>MyTextInput.qml</file>
     </qresource>
 </RCC>

@@ -22,68 +22,68 @@ Rectangle {
     width: 80
 
 
-    ListMenu {
-        id: blockMenu
-        height: 5 * 30
-        z: 2000
+//    ListMenu {
+//        id: blockMenu
+//        height: 5 * 30
+//        z: 2000
 
-        ColumnLayout {
+//        ColumnLayout {
 
-            anchors.fill: parent
-            spacing: 0
+//            anchors.fill: parent
+//            spacing: 0
 
-            ListMenuItem {
-                txt: "Add Block to Right"
-                onSelected: {
-                   chain.addBlockRight(chainID, blockID, "")
-                    blockMenu.visible = false
-                }
-            }
+//            ListMenuItem {
+//                txt: "Add Block to Right"
+//                onSelected: {
+//                    chain.addBlockRight(chainID, blockID, "")
+//                    blockMenu.visible = false
+//                }
+//            }
 
-            ListMenuItem {
-                txt: "Add Block to Left"
-                onSelected: {
-                    chain.addBlockLeft(chainID, blockID, "")
-                    blockMenu.visible = false
-                }
-            }
+//            ListMenuItem {
+//                txt: "Add Block to Left"
+//                onSelected: {
+//                    chain.addBlockLeft(chainID, blockID, "")
+//                    blockMenu.visible = false
+//                }
+//            }
 
-            ListMenuItem {
-                txt: "Remove Block"
-                onSelected: {
-                    chain.removeBlock(chainID, blockID)
-                    blockMenu.visible = false
-                }
-            }
+//            ListMenuItem {
+//                txt: "Remove Block"
+//                onSelected: {
+//                    chain.removeBlock(chainID, blockID)
+//                    blockMenu.visible = false
+//                }
+//            }
 
-            ListMenuItem {
-                txt: "Edit Block"
-                onSelected: {
-                    // edit block
-                    blockMenu.visible = false
-                }
-            }
+//            ListMenuItem {
+//                txt: "Edit Block"
+//                onSelected: {
+//                    // edit block
+//                    blockMenu.visible = false
+//                }
+//            }
 
-            ListMenuItem {
-                txt: "Remove Chain"
-                onSelected: {
-                    addChainDialog.removeChain(chainID)
-                    blockMenu.visible = false
-                }
-            }
+//            ListMenuItem {
+//                txt: "Remove Chain"
+//                onSelected: {
+//                    addChainDialog.removeChain(chainID)
+//                    blockMenu.visible = false
+//                }
+//            }
 
+//        }
 
-        }
-
-    }
+//    }
 
 
     MouseArea {
         anchors.fill: parent
         onClicked: {
             mainWindow.menusDisappear()
-            blockMenu.x = mouseX
-            blockMenu.y = mouseY
+            mainWindow.setBlock(chainID, blockID)
+            blockMenu.x = mouseX + parent.x + parent.parent.x + parent.parent.parent.x + 30
+            blockMenu.y = mouseY + parent.y + parent.parent.y + parent.parent.parent.y + 70
             blockMenu.visible = true
         }
     }

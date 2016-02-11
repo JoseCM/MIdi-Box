@@ -6,6 +6,7 @@
 #include <QDebug>
 #include <QObject>
 #include <QQuickWindow>
+#include <QDirIterator>
 
 #include <pthread.h>
 #include <unistd.h>
@@ -45,12 +46,14 @@ private:
     list<MIDI_Chain*> chainList;
     mqd_t queue_recorder;
 
+    QStringList fileModel;
+
 public:
     MidiBox(QQuickWindow *win);
     ~MidiBox();
 
 public slots:
-    void addNewChain(int input, int channel_in , int output, int channel_out);
+    void addNewChain(int input, int channel_in , int output, int channel_out, QString filename);
     void removeChain(int index);
     void addBlockToChain(int chain, int index, int processblock);
     void removeBlockFromChain(int chain, int index);
@@ -59,8 +62,9 @@ public slots:
     void setBPM(int bpm);
     void play();
     void stop();
-    void armChain(int);
+    void armChain(int, QString);
     void disarmChain(int);
+    void updateFileModel();
 };
 
 #endif // MIDIBOX_H

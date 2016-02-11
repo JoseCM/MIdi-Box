@@ -23,6 +23,12 @@ Rectangle {
         property int blockcount: 0
         property ListView blockView: blockView
 
+        signal done()
+
+        onDone: {
+             recordMouseArea.done()
+        }
+
         function getBlockPos(chain, block){
 
             var blockpos = blockModel.count
@@ -142,7 +148,7 @@ Rectangle {
                 onClicked:{
                     //chainMenu.popup()
                     mainWindow.menusDisappear()
-                    chchainmenu.x = mouseX
+                    chchainmenu.x = mouseX + recordButton.width
                     chchainmenu.y = mouseY
                     chchainmenu.visible = true
                 }
@@ -174,15 +180,33 @@ Rectangle {
             }
 
             MouseArea {
+
+                id: recordMouseArea
                 anchors.fill: parent
+
+                signal done()
+
+                onDone: {
+
+                    var pos = addChainDialog.getChainPos(chainID)
+                    var filename = ""
+
+                    console.log("done")
+
+                    filename = getFileNameDialog.getFileName()
+                    mainWindow.armChain(pos, filename)
+
+                }
+
                 onClicked: {
 
                     var pos = addChainDialog.getChainPos(chainID)
+                    chainView.currentIndex = pos
 
                     if(Qt.colorEqual(parent.color, "steelblue")){
                         parent.color = "red"
-                        mainWindow.armChain(pos)
                         console.log("arm chain - ", pos)
+                        getFileNameDialog.visible = true
                     } else {
                         parent.color = "steelblue"
                         mainWindow.disarmChain(pos)
