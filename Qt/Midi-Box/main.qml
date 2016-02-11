@@ -208,12 +208,36 @@ Window {
 
          }
 
+         function addChainFile(filename) {
+
+             var input = tabPositionGroup.current.index
+             var output = tabPositionGroup2.current.index
+             var inchannel =  inputChannel.value
+             var outchannel = outputChannel.value
+
+             chainModel.append({"chainid": addChainDialog.chaincount})
+             chainView.currentIndex = chainModel.count - 1
+             mainWindow.addChainSignal(input, inchannel , output, outchannel)
+
+             chainView.currentItem.addBlock(0,"IN\n" + tabPositionGroup.current.text + "-" + inputChannel.value.toString())
+             chainView.currentItem.addBlock(1, "OUT\n" + tabPositionGroup2.current.text + "-" + outputChannel.value.toString())
+
+             addChainDialog.chaincount = addChainDialog.chaincount + 1
+         }
+
          function addChain() {
 
              var input = tabPositionGroup.current.index
              var output = tabPositionGroup2.current.index
              var inchannel =  inputChannel.value
              var outchannel = outputChannel.value
+
+             if(input == 3){
+
+                 setFileNameDialog.visible = true
+
+                 return;
+             }
 
              //var array = outputChannel.model
              //arrayay.splice(3, 1)
@@ -359,6 +383,7 @@ Window {
 
 
 
+
      }
 
     GroupBox {
@@ -391,6 +416,69 @@ Window {
         }
     }
 
+    Rectangle {
+
+        id: setFileNameDialog
+
+        width: 200
+        height: 200
+        border.color: "black"
+        border.width: 2
+        anchors.centerIn: parent
+
+        visible: false
+
+        onVisibleChanged: {
+
+            if(visible == true){
+                dialogMouseArea.enabled = true
+            } else {
+                dialogMouseArea.enabled = false
+            }
+
+        }
+
+        ListView {
+
+            id: fileView
+
+
+
+            anchors.fill: parent
+            anchors.margins: 50
+            anchors.bottomMargin: 100
+
+            delegate: Text {
+                text: txt
+            }
+
+            highlight: Rectangle { color: "lightsteelblue"; radius: 5 }
+
+            model: ListModel {
+               ListElement {
+                   txt: "midi1.mid"
+               }
+               ListElement {
+                   txt: "midi2.mid"
+               }
+            }
+
+        }
+
+        Button {
+            text: "OK"
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.bottom: parent.bottom
+            anchors.margins: 20
+
+            onClicked: {
+                addChainDialog.addChainFile(fileView.currentItem.text)
+                parent.visible = false
+            }
+        }
+
+    }
+
 
 //    Rectangle {
 
@@ -406,8 +494,77 @@ Window {
 
 //    }
 
+    Rectangle {
+
+        id: getFileNameDialog
+
+        width: 200
+        height: 200
+        border.color: "black"
+        border.width: 2
+        anchors.centerIn: parent
+
+        visible: false
+
+        function getFileName(){
+            return fileinput.input.text
+        }
+
+        Label {
+
+            text: "Input file name:"
+            anchors.bottom: fileinput.top
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.margins: 20
+        }
+
+        onVisibleChanged: {
+
+            if(visible == true){
+
+                fileinput.input.remove(0,fileinput.input.length)
+                dialogMouseArea.enabled = true
+                keyboard.input = fileinput
+                keyboard.visible = true
+            }
+            else{
+
+                dialogMouseArea.enabled = false
+                keyboard.input = null
+                keyboard.visible = false
+                chainView.currentItem.done()
+            }
+
+        }
+
+        MyTextInput{
+            id: fileinput
+            anchors.centerIn: parent
+
+        }
+
+        Button {
+            text: "OK"
+
+            anchors.top: fileinput.bottom
+            anchors.margins: 20
+            anchors.horizontalCenter: parent.horizontalCenter
+
+            onClicked: {
+
+                if(fileinput.input.length == 0)
+                    return;
+
+                getFileNameDialog.visible = false
+
+            }
+        }
+
+    }
+
 
     Keyboard {
+        id: keyboard
         visible: false
     }
 

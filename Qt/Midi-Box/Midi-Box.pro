@@ -22,7 +22,9 @@ SOURCES += main.cpp \
     ../../Src/library/MidiFile.cpp \
     ../../Src/library/MidiEventList.cpp \
     ../../Src/library/MidiEvent.cpp \
-    ../../Src/library/Binasc.cpp
+    ../../Src/library/Binasc.cpp \
+    ../../Src/MIDI_Player.cpp \
+    ../../Src/MIDI_Recorder.cpp
 
 RESOURCES += qml.qrc
 
@@ -56,7 +58,9 @@ HEADERS += \
     ../../Inc/library/MidiFile.h \
     ../../Inc/library/MidiEventList.h \
     ../../Inc/library/MidiEvent.h \
-    ../../Inc/library/Binasc.h
+    ../../Inc/library/Binasc.h \
+    ../../Inc/MIDI_Recorder.h \
+    ../../Inc/MIDI_Player.h
 
 DISTFILES +=
 
