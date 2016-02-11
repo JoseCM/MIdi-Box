@@ -148,7 +148,7 @@ Rectangle {
                 onClicked:{
                     //chainMenu.popup()
                     mainWindow.menusDisappear()
-                    chchainmenu.x = mouseX
+                    chchainmenu.x = mouseX + recordButton.width
                     chchainmenu.y = mouseY
                     chchainmenu.visible = true
                 }
@@ -194,6 +194,7 @@ Rectangle {
                     console.log("done")
 
                     filename = getFileNameDialog.getFileName()
+                    mainWindow.armChain(pos, filename)
 
                 }
 
@@ -204,7 +205,6 @@ Rectangle {
 
                     if(Qt.colorEqual(parent.color, "steelblue")){
                         parent.color = "red"
-                        mainWindow.armChain(pos)
                         console.log("arm chain - ", pos)
                         getFileNameDialog.visible = true
                     } else {

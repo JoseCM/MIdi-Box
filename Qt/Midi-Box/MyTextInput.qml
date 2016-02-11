@@ -14,7 +14,6 @@ Rectangle {
     property TextInput input: textin
 
     TextInput{
-        color: white
         anchors.fill: parent
         anchors.margins: 1
         id: textin

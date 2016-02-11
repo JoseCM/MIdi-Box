@@ -16,19 +16,27 @@ Window {
     maximumHeight: 640
     maximumWidth: 480
 
+    property int chainID
+    property int blockID
+
     signal addBlockSignal(int chain, int block, int type)
     signal removeBlockSignal(int chain, int block)
-    signal addChainSignal(int input, int inputchannel,  int output, int outputchanel)
+    signal addChainSignal(int input, int inputchannel,  int output, int outputchanel, string filename)
     signal removeChainSignal(int position)
     signal octaveUp()
     signal octaveDown()
     signal play()
     signal stop()
     signal bpm(int bpm)
-    signal armChain(int pos)
+    signal armChain(int pos, string filename)
     signal disarmChain(int pos)
-
+    signal updateFileModel()
     signal menusDisappear()
+
+    function setBlock(chain, block){
+        chainID = chain
+        blockID = block
+    }
 
     MouseArea {
 
@@ -177,6 +185,70 @@ Window {
 
     }
 
+    ListMenu {
+        id: blockMenu
+        height: 5 * 30
+        z: 2000
+
+        ColumnLayout {
+
+            anchors.fill: parent
+            spacing: 0
+
+            ListMenuItem {
+                txt: "Add Block to Right"
+                onSelected: {
+                    var chainpos = addChainDialog.getChainPos(chainID)
+                    chainView.currentIndex = chainpos
+                    var chain = chainView.currentItem
+                    chain.addBlockRight(chainID, blockID, "")
+                    blockMenu.visible = false
+                }
+            }
+
+            ListMenuItem {
+                txt: "Add Block to Left"
+                onSelected: {
+                    var chainpos = addChainDialog.getChainPos(chainID)
+                    chainView.currentIndex = chainpos
+                    var chain = chainView.currentItem
+                    chain.addBlockLeft(chainID, blockID, "")
+                    blockMenu.visible = false
+                }
+            }
+
+            ListMenuItem {
+                txt: "Remove Block"
+                onSelected: {
+                    var chainpos = addChainDialog.getChainPos(chainID)
+                    chainView.currentIndex = chainpos
+                    var chain = chainView.currentItem
+                    chain.removeBlock(chainID, blockID)
+                    blockMenu.visible = false
+                }
+            }
+
+            ListMenuItem {
+                txt: "Edit Block"
+                onSelected: {
+                    // edit block
+                    blockMenu.visible = false
+                }
+            }
+
+            ListMenuItem {
+                txt: "Remove Chain"
+                onSelected: {
+                    var chainpos = addChainDialog.getChainPos(chainID)
+                    chainView.currentIndex = chainpos
+                    var chain = chainView.currentItem
+                    addChainDialog.removeChain(chainID)
+                    blockMenu.visible = false
+                }
+            }
+        }
+    }
+
     MouseArea {
         id: dialogMouseArea
         anchors.fill: parent
@@ -188,7 +260,7 @@ Window {
          id: addChainDialog
          objectName: "addChain"
          width: 320
-         height: 250
+         height: 280
          visible: false
          anchors.centerIn: parent
          z: 100
@@ -217,7 +289,7 @@ Window {
 
              chainModel.append({"chainid": addChainDialog.chaincount})
              chainView.currentIndex = chainModel.count - 1
-             mainWindow.addChainSignal(input, inchannel , output, outchannel)
+             mainWindow.addChainSignal(input, inchannel , output, outchannel, filename)
 
              chainView.currentItem.addBlock(0,"IN\n" + tabPositionGroup.current.text + "-" + inputChannel.value.toString())
              chainView.currentItem.addBlock(1, "OUT\n" + tabPositionGroup2.current.text + "-" + outputChannel.value.toString())
@@ -237,6 +309,7 @@ Window {
                  setFileNameDialog.visible = true
 
                  return;
+
              }
 
              //var array = outputChannel.model
@@ -245,7 +318,7 @@ Window {
 
              chainModel.append({"chainid": addChainDialog.chaincount})
              chainView.currentIndex = chainModel.count - 1
-             mainWindow.addChainSignal(input, inchannel , output, outchannel)
+             mainWindow.addChainSignal(input, inchannel , output, outchannel, "")
              console.log("adding chain..")
 
              chainView.currentItem.addBlock(0,"IN\n" + tabPositionGroup.current.text + "-" + inputChannel.value.toString())
@@ -374,15 +447,12 @@ Window {
              id: cancelButton
              text: "Cancel"
              x: 200
-             y: 200
+             y: 230
              onClicked: {
                  addChainDialog.visible = false
                  dialogMouseArea.enabled = false
             }
          }
-
-
-
 
      }
 
@@ -431,35 +501,67 @@ Window {
         onVisibleChanged: {
 
             if(visible == true){
+                mainWindow.updateFileModel()
+                fileView.focus = true
                 dialogMouseArea.enabled = true
             } else {
+                fileView.focus = false
                 dialogMouseArea.enabled = false
             }
 
         }
 
+        Label {
+            id: filelabel
+            text: "Choose the input file:"
+            anchors.top: parent.top
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.margins: 10
+        }
+
         ListView {
 
             id: fileView
+            objectName: "fileView"
+            anchors.top: filelabel.bottom
+            anchors.topMargin: 10
+            anchors.horizontalCenter: parent.horizontalCenter
+            height: 100
+            width: 150
 
 
+            delegate: Rectangle {
 
-            anchors.fill: parent
-            anchors.margins: 50
-            anchors.bottomMargin: 100
+                border.color: "black"
+                border.width: 1
+                color: "transparent"
+                width: 150
+                height: 20
+                property string text: modelData
 
-            delegate: Text {
-                text: txt
+                Label {
+                    text: modelData
+                    anchors.centerIn: parent
+                }
+
+
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+                        fileView.currentIndex = index
+                    }
+                }
             }
 
-            highlight: Rectangle { color: "lightsteelblue"; radius: 5 }
+            highlight: Rectangle { color: "lightsteelblue"; radius: 1 }
+
 
             model: ListModel {
                ListElement {
-                   txt: "midi1.mid"
+                   modelData: "midi1.mid"
                }
                ListElement {
-                   txt: "midi2.mid"
+                   modelData: "midi2.mid"
                }
             }
 
@@ -472,7 +574,10 @@ Window {
             anchors.margins: 20
 
             onClicked: {
-                addChainDialog.addChainFile(fileView.currentItem.text)
+
+                if(fileView.count > 0)
+                    addChainDialog.addChainFile(fileView.currentItem.text)
+
                 parent.visible = false
             }
         }
@@ -526,8 +631,7 @@ Window {
                 dialogMouseArea.enabled = true
                 keyboard.input = fileinput
                 keyboard.visible = true
-            }
-            else{
+            } else{
 
                 dialogMouseArea.enabled = false
                 keyboard.input = null

@@ -60,19 +60,18 @@ int FILE_IO::getNextMidiMsg(int channel, int tick)
         MidiMessage msg;
         msg.setSize(event.getSize());
 
-        printf("1\n");
         for(int i=0; i < event.getSize(); i++){
             msg[i] = event[i];
         }
-        printf("2\n");
+
         writeInMidiMsg(channel, msg);
         index++;
-        printf("3\n");
+
         if (index == midiFile.getNumEvents(0)){
             resetIndex();
             return 0;
         }
-        printf("4\n");
+
     }
 
     return 1;

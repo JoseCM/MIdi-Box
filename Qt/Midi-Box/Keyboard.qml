@@ -35,7 +35,7 @@ Rectangle {
         id: keyboardLayout
         anchors.right: parent.right
         anchors.left: parent.left
-        anchors.horizontalCenter: parent.horizontalCenter
+        //anchors.horizontalCenter: parent.horizontalCenter
         anchors.verticalCenter: parent.verticalCenter
         anchors.margins: 5
         spacing: 2

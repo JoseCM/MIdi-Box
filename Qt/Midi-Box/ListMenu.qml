@@ -5,7 +5,7 @@ import QtQuick.Layouts 1.1
 Rectangle {
 
     id: listmenu
-    width: 150
+    width: 165
     height: 200
     visible: false
     z: 1000
