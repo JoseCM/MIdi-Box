@@ -78,7 +78,16 @@ void* MIDI_InBlock::Thread_In(void *argument)
 
 void MIDI_InBlock::run()
 {
-    pthread_create(&blockThread, NULL, MIDI_InBlock::Thread_In, static_cast<void*>(this));
+    struct sched_param pthread_param;
+    pthread_attr_t thread_attr;
+
+    pthread_param.sched_priority = 2;
+
+    pthread_attr_setschedpolicy(&thread_attr, SCHED_RR);
+    pthread_attr_setinheritsched(&thread_attr, PTHREAD_EXPLICIT_SCHED);
+    pthread_attr_setschedparam(&thread_attr, &pthread_param);
+
+    pthread_create(&blockThread, &thread_attr, MIDI_InBlock::Thread_In, static_cast<void*>(this));
 }
 
 void MIDI_InBlock::cancel(){
@@ -104,7 +113,16 @@ mqd_t MIDI_OutBlock::getQueueRecorder(){
 
 void MIDI_OutBlock::run()
 {
-    pthread_create(&blockThread, NULL, MIDI_OutBlock::Thread_Out, static_cast<void*>(this));
+    struct sched_param pthread_param;
+    pthread_attr_t thread_attr;
+
+    pthread_param.sched_priority = 2;
+
+    pthread_attr_setschedpolicy(&thread_attr, SCHED_RR);
+    pthread_attr_setinheritsched(&thread_attr, PTHREAD_EXPLICIT_SCHED);
+    pthread_attr_setschedparam(&thread_attr, &pthread_param);
+
+    pthread_create(&blockThread, &thread_attr, MIDI_OutBlock::Thread_Out, static_cast<void*>(this));
 }
 
 

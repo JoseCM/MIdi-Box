@@ -11,8 +11,17 @@ MIDI_ProcessBlock::~MIDI_ProcessBlock()
 }
 
 void MIDI_ProcessBlock::run()
-{
-    pthread_create(&blockThread, NULL, MIDI_ProcessBlock::Thread_Processing, static_cast<void*>(this));
+{ 
+    struct sched_param pthread_param;
+    pthread_attr_t thread_attr;
+
+    pthread_param.sched_priority = 2;
+
+    pthread_attr_setschedpolicy(&thread_attr, SCHED_RR);
+    pthread_attr_setinheritsched(&thread_attr, PTHREAD_EXPLICIT_SCHED);
+    pthread_attr_setschedparam(&thread_attr, &pthread_param);
+
+    pthread_create(&blockThread, &thread_attr, MIDI_ProcessBlock::Thread_Processing, static_cast<void*>(this));
 }
 
 void MIDI_ProcessBlock::cancel()

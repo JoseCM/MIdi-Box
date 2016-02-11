@@ -129,6 +129,15 @@ void* MIDI_Player::Thread_Play(void *arg){
 }
 
 void MIDI_Player::run(){
+    struct sched_param pthread_param;
+    pthread_attr_t thread_attr;
+
+    pthread_param.sched_priority = 3;
+
+    pthread_attr_setschedpolicy(&thread_attr, SCHED_RR);
+    pthread_attr_setinheritsched(&thread_attr, PTHREAD_EXPLICIT_SCHED);
+    pthread_attr_setschedparam(&thread_attr, &pthread_param);
+
     pthread_create(&handle, NULL, MIDI_Player::Thread_Play, static_cast<void*>(this));
 }
 
