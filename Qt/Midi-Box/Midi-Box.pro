@@ -61,3 +61,5 @@ HEADERS += \
 DISTFILES +=
 
 INCLUDEPATH += ../../Inc ../../Inc/library
+
+LIBS += -lrt

@@ -358,6 +358,7 @@ Window {
          }
 
 
+
      }
 
     GroupBox {
@@ -404,5 +405,11 @@ Window {
 //        anchors.centerIn: parent
 
 //    }
+
+
+    Keyboard {
+        visible: false
+    }
+
 
 }
