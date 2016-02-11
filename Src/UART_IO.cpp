@@ -81,7 +81,7 @@ void UART_IO::getNextMidiMsg(){
         return;
     }
 
-   printf("bytes received = %d\n", temp);
+   //printf("bytes received = %d\n", temp);
 
     if(byte[0] == 0xf8 || byte[0] == 0xfe)
         return;
@@ -91,22 +91,20 @@ void UART_IO::getNextMidiMsg(){
         ptr = &byte[1];
         while(1){
             temp = read(fd_uart, ptr, counter);
-            printf("read result = %d\n", temp);
+            //printf("read result = %d\n", temp);
             if(temp == counter)
                 break;
 
             ptr += temp;
             counter -= temp;
-
         }
-
     }
 
 	msg.setSize(counter2 + 1);
 	for(int i = 0; i < counter2 + 1; i++){
 		msg[i] = byte[i];
-		printf(" %x", msg[i]);
-    } printf("\n");
+        //printf(" %x", msg[i]);
+    } //printf("\n");
 
     channel = msg.getChannel();
 
@@ -123,12 +121,12 @@ void UART_IO::sendNextMidiMsg(){
 
     for(int i = 0; i < size; i++){
         byte[i] = msg[i];
-        printf("%x ", byte[i]);
+    //    printf("%x ", byte[i]);
     }
-    printf("\n");
+    //printf("\n");
 
     i = write(fd_uart, byte, size);
-    printf("write: %d\n", i);
+   // printf("write: %d\n", i);
 }
 
 void* UART_IO::Thread_InMidi(void* arg)

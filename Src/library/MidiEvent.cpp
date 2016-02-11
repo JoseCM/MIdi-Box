@@ -61,9 +61,9 @@ MidiEvent::MidiEvent(const MidiEvent& mfevent) {
    }
 }
 
-MidiEvent::MidiEvent(int aTime, int aTrack, MidiMessage& message)
-     :MidiMessage(message) {
-}
+//MidiEvent::MidiEvent(int aTime, int aTrack, MidiMessage& message)
+//     :MidiMessage(message) {
+//}
 
 
 

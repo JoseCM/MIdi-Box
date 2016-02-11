@@ -22,11 +22,11 @@ public:
     virtual ~FILE_IO();
 	bool open();
     bool close();
-
+    void truncate();
     void setTicksPerQuarterNote(int tick);
     void addMidiEvent(MidiEvent &event);
-    void getNextMidiMsg(int channel, int tick);
-
+    int getNextMidiMsg(int channel, int tick);
+    int getLastTick();
     void resetIndex();
 
     void run(){}

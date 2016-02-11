@@ -23,7 +23,6 @@ MIDI_Clock::MIDI_Clock() :
 
     timer_create(CLOCK_REALTIME, &sev, &timerId);
 
-    //enable(true);
 }
 
 
@@ -53,15 +52,13 @@ timer_t MIDI_Clock::getTimerId() const{
 
 
 void MIDI_Clock::reset(){
-    enable(false);
     tickCount = -1;
-    enable(true);
 }
 
 void MIDI_Clock::enable(bool en){
 
     struct itimerspec ts;
-    long clock_time = 60000000/(bpm*tickDivision);
+    long clock_time = 60000000000/(bpm*tickDivision);
 
     if(en == true){
         ts.it_interval = {0, clock_time};
@@ -74,8 +71,10 @@ void MIDI_Clock::enable(bool en){
     }
 }
 
-void MIDI_Clock::lock(){
-    sem_wait(&timerSemaphore);
+bool MIDI_Clock::lock(){
+    if(sem_wait(&timerSemaphore) == -1)
+        return false;
+    return true;
 }
 
 void MIDI_Clock::unlock(){

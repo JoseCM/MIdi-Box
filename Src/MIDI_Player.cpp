@@ -2,8 +2,9 @@
 #include "MIDI_Player.h"
 
 
-MIDI_Player::MIDI_Player(MIDI_Clock* clk): clock(clk), internalCounter(0)
+MIDI_Player::MIDI_Player(MIDI_Clock* clk, list<MIDI_Chain*> &list): clock(clk), internalCounter(0), chainList(list)
 {
+    stop();
 }
 
 MIDI_Player::~MIDI_Player(){
@@ -11,10 +12,16 @@ MIDI_Player::~MIDI_Player(){
 }
 
 void MIDI_Player::start(){
+    clock->enable(false);
     clock->reset();
-    clock->enable(true);
-    setPlayingState(true);
     internalCounter = 0;
+    setPlayingState(true);
+
+    for( auto &chain : filesToPlay ){
+        chain.second.second = 0;
+    }
+
+    clock->enable(true);
     sendSysRealTimeMsg(0xFA); //system real-time message play
 }
 
@@ -22,15 +29,21 @@ void MIDI_Player::stop(){
     clock->enable(false);
     setPlayingState(false);
     sendSysRealTimeMsg(0xFC); //system real-time message stop
-    resetChainToPlay();
 
+    for( auto &chain : chainList ){
+        MidiMessage msg( 0xB0 | chain->getOutputBlock()->getChannel() , 123 , 0);
+        chain->getOutputBlock()->getIOStream()->writeOutMidiMsg(msg);
+
+    }
+
+    resetChainToPlay();
 }
 
 void MIDI_Player::resetChainToPlay(){
-    map<MIDI_Chain*, FILE_IO*>::iterator it = filesToPlay.begin();
+    map<MIDI_Chain*, pair<FILE_IO*, int>>::iterator it = filesToPlay.begin();
 
     while(it != filesToPlay.end()){
-        (*it).second->resetIndex();
+        (*it).second.first->resetIndex();
         it++;
     }
 
@@ -50,45 +63,31 @@ void MIDI_Player::sendSysRealTimeMsg(int command){
 
 void MIDI_Player::sendMidiMsgFromFiles(){
 
-    map<MIDI_Chain*, FILE_IO*>::iterator it = filesToPlay.begin();
-    int channel, tick;
+    map<MIDI_Chain*, pair<FILE_IO*, int>>::iterator it = filesToPlay.begin();
+    int channel, tick, tickTotal = clock->getTickCount() ;
 
     while(it != filesToPlay.end()){
         channel = (*it).first->getInputBlock()->getChannel();
-        tick = clock->getTickCount();
-        (*it).second->getNextMidiMsg(channel, tick);
+        tick = tickTotal - (*it).second.second;
+        if(!(*it).second.first->getNextMidiMsg(channel, tick))
+            (*it).second.second = tickTotal;
         it++;
     }
 }
 
-void MIDI_Player::waitTickCounting(){
-    clock->lock();
+bool MIDI_Player::waitTickCounting(){
     internalCounter++;
+    return clock->lock();
 }
 
-void MIDI_Player::addChainToList(MIDI_Chain* chain){
-    chainList.push_front(chain);
-}
-
-void MIDI_Player::removeChainFromList(MIDI_Chain* chain){
-    list<MIDI_Chain*>::iterator it = chainList.begin();
-
-    while(it != chainList.end()){
-        if(*it == chain){
-            chainList.erase(it);
-            break;
-        }
-        it++;
-    }
-}
 
 void MIDI_Player::addChainToPlay(MIDI_Chain* chain, FILE_IO* midiFile){
-    pair<MIDI_Chain*, FILE_IO*> newpair(chain, midiFile);
+    pair<MIDI_Chain*, pair<FILE_IO*, int>> newpair(chain, pair<FILE_IO*, int>(midiFile, 0));
     filesToPlay.insert(newpair);
 }
 
 void MIDI_Player::removeChainFromPlay(MIDI_Chain* chain){
-    map<MIDI_Chain*, FILE_IO*>::iterator it;
+    map<MIDI_Chain*, pair<FILE_IO*, int>>::iterator it;
 
     it = filesToPlay.find(chain);
 
@@ -115,14 +114,16 @@ void* MIDI_Player::Thread_Play(void *arg){
 
     while(1)
     {
-        midiPlayer->waitTickCounting();
+        if(midiPlayer->waitTickCounting()){
 
-        if(midiPlayer->getPlayingState())
-        {
-            if((midiPlayer->getInternalCounter()%4) == 0)
-                midiPlayer->sendSysRealTimeMsg(0xF8);
+            if(midiPlayer->getPlayingState())
+            {
+                if((midiPlayer->getInternalCounter()%4) == 0)
+                    midiPlayer->sendSysRealTimeMsg(0xF8);
 
-            midiPlayer->sendMidiMsgFromFiles();
+                midiPlayer->sendMidiMsgFromFiles();
+
+            }
         }
     }
 }

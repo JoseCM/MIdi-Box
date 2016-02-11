@@ -27,13 +27,13 @@ public:
     MIDI_Clock();
     ~MIDI_Clock();
 
-    void setBMP(int bmp);  //confirmar
+    void setBMP(int bmp);
     void incTickCount(int tickInc);
     int getTickCount() const;
     timer_t getTimerId() const;
     void reset();
     void enable(bool en);
-    void lock();
+    bool lock();
     void unlock();
 
     static void Handler_ClockTick(int sig, siginfo_t *si, void *uc);

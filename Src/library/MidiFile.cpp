@@ -546,7 +546,9 @@ int MidiFile::write(ostream& out) {
             // automatically after all track data has been written).
             continue;
          }
+
          writeVLValue((*events[i])[j].tick, trackdata);
+
          if (((*events[i])[j].getCommandByte() == 0xf0) ||
              ((*events[i])[j].getCommandByte() == 0xf7)) {
             // 0xf0 == Complete sysex message (0xf0 is part of the raw MIDI).
@@ -1153,11 +1155,14 @@ int MidiFile::addEvent(MidiEvent& mfevent) {
       events[0]->push_back(mfevent);
       return events[0]->size()-1;
    } else {
+      printf("tick %x; message: ", mfevent.tick);
+      for(int i = 0; i < mfevent.size(); i++)
+          printf("%x ", mfevent[i]);
+      printf("\n");
       events[mfevent.track]->push_back(mfevent);
       return events[mfevent.track]->size()-1;
    }
 }
-
 
 
 ///////////////////////////////
