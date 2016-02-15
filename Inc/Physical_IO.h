@@ -2,7 +2,7 @@
 #define __Physical_IO_H__
 
 #include "MIDI_IO.h"
-#include "TrellisI2C.h"
+//#include "TrellisI2C.h"
 #include <string>
 #include <cstdint>
 

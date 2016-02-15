@@ -78,6 +78,15 @@ void* MIDI_InBlock::Thread_In(void *argument)
 
 void MIDI_InBlock::run()
 {
+    struct sched_param pthread_param;
+    pthread_attr_t thread_attr;
+
+    pthread_param.sched_priority = 2;
+
+    pthread_attr_setschedpolicy(&thread_attr, SCHED_RR);
+    pthread_attr_setinheritsched(&thread_attr, PTHREAD_EXPLICIT_SCHED);
+    pthread_attr_setschedparam(&thread_attr, &pthread_param);
+
     pthread_create(&blockThread, NULL, MIDI_InBlock::Thread_In, static_cast<void*>(this));
 }
 
@@ -104,7 +113,21 @@ mqd_t MIDI_OutBlock::getQueueRecorder(){
 
 void MIDI_OutBlock::run()
 {
+    struct sched_param pthread_param;
+    pthread_attr_t thread_attr;
+
+    printf("max_priority: %d\n", sched_get_priority_max(SCHED_RR));
+
+    pthread_param.sched_priority = 2;
+
+    pthread_attr_setschedpolicy(&thread_attr, SCHED_RR);
+    pthread_attr_setinheritsched(&thread_attr, PTHREAD_EXPLICIT_SCHED);
+    pthread_attr_setschedparam(&thread_attr, &pthread_param);
+
     pthread_create(&blockThread, NULL, MIDI_OutBlock::Thread_Out, static_cast<void*>(this));
+
+    //pthread_detach(blockThread);
+
 }
 
 
@@ -122,6 +145,8 @@ void* MIDI_OutBlock::Thread_Out(void *argument)
 
     messageToRecord message_s;
     char message_v[50];
+
+    pthread_detach(pthread_self());
 
     if(!io_block)
         pthread_exit(nullptr);

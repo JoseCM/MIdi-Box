@@ -22,7 +22,6 @@ MIDI_Clock::MIDI_Clock() :
     sev.sigev_value.sival_ptr = static_cast<void*>(this);
 
     timer_create(CLOCK_REALTIME, &sev, &timerId);
-
 }
 
 

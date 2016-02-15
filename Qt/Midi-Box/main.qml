@@ -16,8 +16,8 @@ Window {
     maximumHeight: 640
     maximumWidth: 480
 
-    property int chainID
-    property int blockID
+    property int chainidentity
+    property int blockidentity
 
     signal addBlockSignal(int chain, int block, int type)
     signal removeBlockSignal(int chain, int block)
@@ -34,8 +34,8 @@ Window {
     signal menusDisappear()
 
     function setBlock(chain, block){
-        chainID = chain
-        blockID = block
+        chainidentity = chain
+        blockidentity = block
     }
 
     MouseArea {
@@ -198,10 +198,10 @@ Window {
             ListMenuItem {
                 txt: "Add Block to Right"
                 onSelected: {
-                    var chainpos = addChainDialog.getChainPos(chainID)
+                    var chainpos = addChainDialog.getChainPos(chainidentity)
                     chainView.currentIndex = chainpos
                     var chain = chainView.currentItem
-                    chain.addBlockRight(chainID, blockID, "")
+                    chain.addBlockRight(chainidentity, blockidentity, "")
                     blockMenu.visible = false
                 }
             }
@@ -209,10 +209,10 @@ Window {
             ListMenuItem {
                 txt: "Add Block to Left"
                 onSelected: {
-                    var chainpos = addChainDialog.getChainPos(chainID)
+                    var chainpos = addChainDialog.getChainPos(chainidentity)
                     chainView.currentIndex = chainpos
                     var chain = chainView.currentItem
-                    chain.addBlockLeft(chainID, blockID, "")
+                    chain.addBlockLeft(chainidentity, blockidentity, "")
                     blockMenu.visible = false
                 }
             }
@@ -220,10 +220,10 @@ Window {
             ListMenuItem {
                 txt: "Remove Block"
                 onSelected: {
-                    var chainpos = addChainDialog.getChainPos(chainID)
+                    var chainpos = addChainDialog.getChainPos(chainidentity)
                     chainView.currentIndex = chainpos
                     var chain = chainView.currentItem
-                    chain.removeBlock(chainID, blockID)
+                    chain.removeBlock(chainidentity, blockidentity)
                     blockMenu.visible = false
                 }
             }
@@ -239,10 +239,10 @@ Window {
             ListMenuItem {
                 txt: "Remove Chain"
                 onSelected: {
-                    var chainpos = addChainDialog.getChainPos(chainID)
+                    var chainpos = addChainDialog.getChainPos(chainidentity)
                     chainView.currentIndex = chainpos
                     var chain = chainView.currentItem
-                    addChainDialog.removeChain(chainID)
+                    addChainDialog.removeChain(chainidentity)
                     blockMenu.visible = false
                 }
             }
@@ -329,11 +329,13 @@ Window {
          }
 
          function removeChain(id) {
-
+             console.log("removing chain ", pos)
              var pos = addChainDialog.getChainPos(id)
-
+             console.log("removing chain ", pos)
              if(pos != -1){
+                 console.log("removing chain ", pos)
                  chainModel.remove(pos, 1)
+                 console.log("removing chain ", pos)
                  mainWindow.removeChainSignal(pos)
                  console.log("removing chain ", pos)
              }

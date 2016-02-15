@@ -6,6 +6,9 @@
 #include <QDebug>
 #include <QObject>
 #include <QQuickWindow>
+#include <QQuickItem>
+#include <QQmlEngine>
+#include <QQmlComponent>
 #include <QDirIterator>
 
 #include <pthread.h>
@@ -23,6 +26,7 @@
 #include "MIDI_Clock.h"
 #include "MIDI_Player.h"
 #include "MIDI_Recorder.h"
+#include "monitormodel.h"
 
 
 enum MIDI_IO_TYPE {MIDI, USB, Interface, File };
@@ -30,7 +34,6 @@ enum MIDI_PROCESS_TYPE {Monitor, Scale};
 
 class MidiBox: public QObject
 {
-
     Q_OBJECT
 
 private:
@@ -42,14 +45,16 @@ private:
     MIDI_Player *player;
     MIDI_Recorder *recorder;
 
-    QQuickWindow *window;
     list<MIDI_Chain*> chainList;
     mqd_t queue_recorder;
 
+    QQuickWindow *window;
+    QQmlEngine *engine;
     QStringList fileModel;
 
+
 public:
-    MidiBox(QQuickWindow *win);
+    MidiBox(QQuickWindow *win, QQmlEngine *eng);
     ~MidiBox();
 
 public slots:
