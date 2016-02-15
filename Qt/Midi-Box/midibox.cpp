@@ -1,9 +1,8 @@
 #include "midibox.h"
 
 
-MidiBox::MidiBox(QQuickWindow *win){
-
-
+MidiBox::MidiBox(QQuickWindow *win, QQmlEngine *eng) : window(win), engine(eng)
+{
     struct mq_attr attr;
     attr.mq_maxmsg = 1000;
     attr.mq_msgsize = sizeof(messageToRecord);
@@ -11,8 +10,6 @@ MidiBox::MidiBox(QQuickWindow *win){
     queue_recorder = mq_open("/recorderqueue", O_CREAT | O_RDWR, S_IRWXU | S_IRWXG , &attr);
     if(queue_recorder == (mqd_t) -1)
         perror("queue:");
-
-    window = win;
 
     phys_io = new Physical_IO(I2CDEVICE, SPIDEVICE);
     uart_io = new UART_IO(UARTDEVICE);
@@ -40,7 +37,6 @@ MidiBox::MidiBox(QQuickWindow *win){
     usb_io->run();
     player->run();
     recorder->run();
-
 
 }
 
@@ -105,15 +101,19 @@ void MidiBox::removeChain(int index){
     std::list<MIDI_Chain*>::iterator it1 = chainList.begin();
     std::advance(it1, index);
 
+        qDebug() << "Removing Chain...";
     if(dynamic_cast<FILE_IO*>((*it1)->getInputBlock()->getIOStream())){
         player->removeChainFromPlay(*it1);
     }
 
+        qDebug() << "Removing Chain...";
     if((*it1)->getRecordingState()){
         recorder->removeChainFromRecord(*it1);
     }
 
+        qDebug() << "Removing Chain...";
     delete (*it1);
+        qDebug() << "Removing Chain...";
     chainList.erase(it1);
 
     qDebug() << "Removing Chain...";
@@ -124,20 +124,33 @@ void MidiBox::removeChain(int index){
 void MidiBox::addBlockToChain(int chain, int index, int processblock){
 
     MIDI_ProcessBlock *block;
-
-    std::list<MIDI_Chain*>::iterator it1 = chainList.begin();
-    std::advance(it1, chain);
-
+    //MonitorModel *new_monitor;
+    //QQuickItem *parentItem, *childItem;
+    //QQmlComponent *component;
 
     switch (processblock) {
         case Monitor:
+            //parentItem = qobject_cast<QQuickItem*>(window->findChild<QObject*>("chainColumns"));
+            //component = new QQmlComponent(engine, QUrl("Block.qml"));
+            //childItem = qobject_cast<QQuickItem*>(component->create());
+            //delete component;
+            //QQmlEngine::setObjectOwnership(childItem, QQmlEngine::CppOwnership);
+            //childItem->setProperty("model", )
+
+
+            //new_monitor = new MonitorModel();
+
             block = new MIDI_Monitor();
+
             break;
         case Scale:
             block = new MIDI_Scale();
             break;
     };
 
+
+    std::list<MIDI_Chain*>::iterator it1 = chainList.begin();
+    std::advance(it1, chain);
 
     if(block){
         (*it1)->insertBlock(index, block);

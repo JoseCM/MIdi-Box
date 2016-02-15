@@ -150,14 +150,18 @@ void UART_IO::run()
     struct sched_param pthread_param;
     pthread_attr_t thread_attr;
 
-    pthread_param.sched_priority = 3;
+    pthread_param.sched_priority = 2;
 
     pthread_attr_setschedpolicy(&thread_attr, SCHED_RR);
     pthread_attr_setinheritsched(&thread_attr, PTHREAD_EXPLICIT_SCHED);
     pthread_attr_setschedparam(&thread_attr, &pthread_param);
 
-    pthread_create(&handle1, &thread_attr, UART_IO::Thread_InMidi, static_cast<void*>(this));
-    pthread_create(&handle2, &thread_attr, UART_IO::Thread_OutMidi, static_cast<void*>(this));
+    //pthread_create(&handle1, &thread_attr, UART_IO::Thread_InMidi, static_cast<void*>(this));
+    //pthread_create(&handle2, &thread_attr, UART_IO::Thread_OutMidi, static_cast<void*>(this));
+    pthread_create(&handle1, NULL, UART_IO::Thread_InMidi, static_cast<void*>(this));
+    pthread_create(&handle2, NULL, UART_IO::Thread_OutMidi, static_cast<void*>(this));
+
+
 }
 
 

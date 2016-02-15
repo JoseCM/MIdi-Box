@@ -139,6 +139,7 @@ void MIDI_Player::run(){
     pthread_attr_setschedparam(&thread_attr, &pthread_param);
 
     pthread_create(&handle, NULL, MIDI_Player::Thread_Play, static_cast<void*>(this));
+    pthread_create(&handle, NULL, MIDI_Player::Thread_Play, static_cast<void*>(this));
 }
 
 

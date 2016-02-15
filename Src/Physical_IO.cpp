@@ -272,16 +272,33 @@ Physical_IO::Physical_IO(string device_i2c, string device_spi): MIDI_IO()
 
 	//set buttons mapping
 	buttonMap.assign(16, MidiMessage() );
-	for(int i=0; i < 16; i++)
-		buttonMap[i].setCommand(0x90, i+48, 127);
+
+    buttonMap[0].setCommand(0x90, 48+12, 127);
+    buttonMap[1].setCommand(0x90, 48+8, 127);
+    buttonMap[2].setCommand(0x90, 48+4, 127);
+    buttonMap[3].setCommand(0x90, 48+0, 127);
+    buttonMap[4].setCommand(0x90, 48+13, 127);
+    buttonMap[5].setCommand(0x90, 48+9, 127);
+    buttonMap[6].setCommand(0x90, 48+5, 127);
+    buttonMap[7].setCommand(0x90, 48+1, 127);
+    buttonMap[8].setCommand(0x90, 48+14, 127);
+    buttonMap[9].setCommand(0x90, 48+10, 127);
+    buttonMap[10].setCommand(0x90, 48+6, 127);
+    buttonMap[11].setCommand(0x90, 48+2, 127);
+    buttonMap[12].setCommand(0x90, 48+15, 127);
+    buttonMap[13].setCommand(0x90, 48+11, 127);
+    buttonMap[14].setCommand(0x90, 48+7, 127);
+    buttonMap[15].setCommand(0x90, 48+3, 127);
+
+
 
 	//set encoder mapping
 	encoderMap.assign(4, MidiMessage() );
 
-    encoderMap[0].setCommand(0xB0, 40, 0);
-    encoderMap[1].setCommand(0xB0, 41, 0);
-    encoderMap[2].setCommand(0xB0, 42, 0);
-    encoderMap[3].setCommand(0xB0, 48, 0);
+    encoderMap[0].setCommand(0xB0, 44, 0);
+    encoderMap[1].setCommand(0xB0, 46, 0);
+    encoderMap[2].setCommand(0xB0, 48, 0);
+    encoderMap[3].setCommand(0xB0, 53, 0);
 
 	for(int i = 0; i < 4; i++)
 		encoder_value[i] = 63.5;
@@ -426,7 +443,7 @@ MidiMessage& Physical_IO::encoderToMidiMsg(int encoder)
 
 void Physical_IO::upOctave(){
 
-    if(buttonMap[0].getP1() + 12 > 108)
+    if(buttonMap[3].getP1() + 12 > 108)
         return;
 
     for(int i=0; i < 16; i++)
@@ -435,12 +452,11 @@ void Physical_IO::upOctave(){
 }
 
 void Physical_IO::downOctave(){
-    if(buttonMap[0].getP1() - 12 < 0)
+    if(buttonMap[3].getP1() - 12 < 0)
         return;
 
     for(int i=0; i < 16; i++)
         buttonMap[i].setP1(buttonMap[i].getP1() - 12);
-
 
 }
 
@@ -463,11 +479,9 @@ uint8_t Physical_IO::updateEncoderState(){
 				if(temp_prev == 0x00 && temp_new == 0x02){
 					encoder_value[i/2] -= 5.3;
 					status |= ( 1 << (i/2));
-					printf("encoder %f\n", encoder_value[i/2]);
 				} else if (temp_prev == 0x02 && temp_new == 0x00){
 					encoder_value[i/2] += 5.3;
 					status |= ( 1 << (i/2));
-					printf("encoder %f\n", encoder_value[i/2]);
 				}
 
 				if(encoder_value[i/2] < 0.0) {
@@ -553,14 +567,18 @@ void Physical_IO::run()
     struct sched_param pthread_param;
     pthread_attr_t thread_attr;
 
-    pthread_param.sched_priority = 3;
+    pthread_param.sched_priority = 2;
 
     pthread_attr_setschedpolicy(&thread_attr, SCHED_RR);
     pthread_attr_setinheritsched(&thread_attr, PTHREAD_EXPLICIT_SCHED);
     pthread_attr_setschedparam(&thread_attr, &pthread_param);
 
-    pthread_create(&handle1, &thread_attr, Physical_IO::Thread_InEncoder, static_cast<void*>(this));
-    pthread_create(&handle2, &thread_attr, Physical_IO::Thread_InButton, static_cast<void*>(this));
+    //pthread_create(&handle1, &thread_attr, Physical_IO::Thread_InEncoder, static_cast<void*>(this));
+    //pthread_create(&handle2, &thread_attr, Physical_IO::Thread_InButton, static_cast<void*>(this));
+
+    pthread_create(&handle1, NULL, Physical_IO::Thread_InEncoder, static_cast<void*>(this));
+    pthread_create(&handle2, NULL, Physical_IO::Thread_InButton, static_cast<void*>(this));
+
 }
 
 

@@ -22,6 +22,7 @@ MIDI_Chain::~MIDI_Chain()
     }
 
     it = processBlockList.begin();
+
     while(it != processBlockList.end()){
         delete *it;
         it++;
