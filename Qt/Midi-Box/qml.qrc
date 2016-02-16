@@ -13,5 +13,6 @@
         <file>Keyboard.qml</file>
         <file>KeyboardButton.qml</file>
         <file>MyTextInput.qml</file>
+        <file>monitor.qml</file>
     </qresource>
 </RCC>
