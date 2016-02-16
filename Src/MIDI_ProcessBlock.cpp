@@ -58,14 +58,14 @@ void* MIDI_ProcessBlock::Thread_Processing(void* arg)
     }
 }
 
-MIDI_Monitor::MIDI_Monitor()
+MIDI_Monitor::MIDI_Monitor(MonitorModel *monitor): monitorModel(monitor)
 {
-     monitorModel = new MonitorModel();
+
 
 }
 
 MIDI_Monitor::~MIDI_Monitor(){
-    delete monitorModel;
+
 }
 
 void MIDI_Monitor::ProcessMsg(MidiMessage& msg)

@@ -23,7 +23,7 @@ class MIDI_Monitor: public MIDI_ProcessBlock
 {
     MonitorModel *monitorModel;
 public:
-    MIDI_Monitor();
+    MIDI_Monitor(MonitorModel *monitor);
     virtual ~MIDI_Monitor();
     virtual void ProcessMsg(MidiMessage& msg);
 

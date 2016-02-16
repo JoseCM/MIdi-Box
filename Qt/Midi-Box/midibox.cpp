@@ -124,30 +124,36 @@ void MidiBox::removeChain(int index){
 void MidiBox::addBlockToChain(int chain, int index, int processblock){
 
     MIDI_ProcessBlock *block;
-    //MonitorModel *new_monitor;
-    //QQuickItem *parentItem, *childItem;
-    //QQmlComponent *component;
+    MonitorModel *new_monitor;
+    QQuickItem *parentItem, *childItem;
+    QQmlComponent *component;
+    pair<int, int> pair1;
+    pair<pair<int, int>, MonitorModel*> pair2;
 
     switch (processblock) {
         case Monitor:
+            new_monitor = new MonitorModel();
+
             //parentItem = qobject_cast<QQuickItem*>(window->findChild<QObject*>("chainColumns"));
-            //component = new QQmlComponent(engine, QUrl("Block.qml"));
+            //component = new QQmlComponent(engine, QUrl("Monitor.qml"));
             //childItem = qobject_cast<QQuickItem*>(component->create());
             //delete component;
             //QQmlEngine::setObjectOwnership(childItem, QQmlEngine::CppOwnership);
-            //childItem->setProperty("model", )
 
+            //engine.rootContext()->setContextProperty("model", new_monitor);
+            //childItem->setProperty("model", "model1" );
 
-            //new_monitor = new MonitorModel();
+            pair1 = std::make_pair(chain, index);
+            pair2 = std::make_pair(pair1, new_monitor);
+            monitorList.push_front(pair2);
 
-            block = new MIDI_Monitor();
+            block = new MIDI_Monitor(new_monitor);
 
             break;
         case Scale:
             block = new MIDI_Scale();
             break;
     };
-
 
     std::list<MIDI_Chain*>::iterator it1 = chainList.begin();
     std::advance(it1, chain);
@@ -157,7 +163,7 @@ void MidiBox::addBlockToChain(int chain, int index, int processblock){
         block->run();
     }
 
-    qDebug() << "Adding block to chain...";
+    //qDebug() << "Adding block to chain...";
 }
 
 
@@ -167,9 +173,21 @@ void MidiBox::removeBlockFromChain(int chain, int index){
     std::advance(it1, chain);
 
     (*it1)->removeBlock(index);
-    //thread cancelled in removeBlock
 
-    qDebug() << "Removing to chain...";
+    std::list<pair<pair<int, int>,  MonitorModel*>>::iterator it2 = monitorList.begin();
+
+    while(it2 != monitorList.end()){
+
+        if( (*it2).first.first == chain && (*it2).first.second == index){
+            delete (*it2).second;
+            break;
+        }
+        it2++;
+    }
+    monitorList.erase(it2);
+
+    //thread cancelled in removeBlock
+    //qDebug() << "Removing to chain...";
 
 }
 

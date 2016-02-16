@@ -52,6 +52,7 @@ private:
     QQmlEngine *engine;
     QStringList fileModel;
 
+    list<pair<pair<int, int>,  MonitorModel*>> monitorList;
 
 public:
     MidiBox(QQuickWindow *win, QQmlEngine *eng);
