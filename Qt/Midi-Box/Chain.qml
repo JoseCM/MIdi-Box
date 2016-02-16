@@ -123,13 +123,10 @@ Rectangle {
 
         function showBlockView(chain, block){
 
-            var chainpos = addChainDialog.getChainPos(chain)
             var blockpos = getBlockPos(chain, block)
 
-            chainView.currentIndex = chainpos
-
-            chainView.currentItem.blockView.currentIndex = blockpos
-            chainView.currentItem.blockView.currentItem.showView()
+            blockView.currentIndex = blockpos
+            blockView.currentItem.showView()
 
         }
 
