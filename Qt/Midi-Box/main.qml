@@ -38,6 +38,13 @@ Window {
         blockidentity = block
     }
 
+    function setBlockModel(chainpos, blockpos, view, model){
+
+        chainView.currentIndex = chainpos
+        chainView.currentItem.setBlockModel(blockpos, view, model)
+
+    }
+
     MouseArea {
 
         anchors.fill: parent
@@ -229,9 +236,14 @@ Window {
             }
 
             ListMenuItem {
-                txt: "Edit Block"
+                txt: "View/Edit Block"
                 onSelected: {
                     // edit block
+                    var chainpos = addChainDialog.getChainPos(chainidentity)
+                    chainView.currentIndex = chainpos
+                    var chain = chainView.currentItem
+
+                    chain.showBlockView(chainidentity, blockidentity)
                     blockMenu.visible = false
                 }
             }

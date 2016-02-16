@@ -34,7 +34,7 @@ QVariant MonitorModel::data(const QModelIndex &index, int role) const{
     } else if (role == Data1Role) {
 
         return data1List[index.row()];
-    } else if (role == Data1Role) {
+    } else if (role == Data2Role) {
 
         return data2List[index.row()];
     }

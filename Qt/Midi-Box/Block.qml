@@ -21,6 +21,17 @@ Rectangle {
     anchors.leftMargin: 5
     width: 80
 
+    property Monitor blockview
+    property bool hasView
+
+    hasView: false
+
+    function setBlockModel(view, model){
+        blockview = view
+        blockview.setModel(model)
+        hasView = true
+    }
+
 
 //    ListMenu {
 //        id: blockMenu
@@ -75,6 +86,13 @@ Rectangle {
 //        }
 
 //    }
+
+    function showView() {
+
+        if(hasView == true)
+            view.visible = true
+
+    }
 
 
     MouseArea {

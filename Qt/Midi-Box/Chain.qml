@@ -29,6 +29,13 @@ Rectangle {
              recordMouseArea.done()
         }
 
+        function setBlockModel(blockpos, view, model){
+
+            blockView.currentIndex = blockpos
+            blockView.currentItem.setBlockModel(view, model)
+
+        }
+
         function getBlockPos(chain, block){
 
             var blockpos = blockModel.count
@@ -112,6 +119,18 @@ Rectangle {
             var chainpos = addChainDialog.getChainPos(chainID)
             mainWindow.removeBlockSignal(chainpos, pos)
             console.log("removing block ", pos, " -chain ", chainpos)
+        }
+
+        function showBlockView(chain, block){
+
+            var chainpos = addChainDialog.getChainPos(chain)
+            var blockpos = getBlockPos(chain, block)
+
+            chainView.currentIndex = chainpos
+
+            chainView.currentItem.blockView.currentIndex = blockpos
+            chainView.currentItem.blockView.currentItem.showView()
+
         }
 
         Rectangle {
@@ -233,7 +252,7 @@ Rectangle {
                 ListMenuItem {
                     txt: "Add Block"
                     onSelected: {
-                        addBlock(blockModel.count - 1, "PROCESS")
+                        addBlock(blockModel.count - 1, "monitor")
                         chchainmenu.visible = false
                     }
                 }

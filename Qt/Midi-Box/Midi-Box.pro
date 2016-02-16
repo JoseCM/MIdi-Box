@@ -6,7 +6,6 @@ CONFIG += c++11
 SOURCES += main.cpp \
     midibox.cpp \
     ../../Src/UART_IO.cpp \
-    ../../Src/TrellisI2C.cpp \
     ../../Src/Physical_IO.cpp \
     ../../Src/MIDI_ProcessBlock.cpp \
     ../../Src/MIDI_MsgBuffer.cpp \
@@ -24,7 +23,8 @@ SOURCES += main.cpp \
     ../../Src/library/MidiEvent.cpp \
     ../../Src/library/Binasc.cpp \
     ../../Src/MIDI_Player.cpp \
-    ../../Src/MIDI_Recorder.cpp
+    ../../Src/MIDI_Recorder.cpp \
+    monitormodel.cpp
 
 RESOURCES += qml.qrc
 
@@ -42,7 +42,6 @@ include(deployment.pri)
 HEADERS += \
     midibox.h \
     ../../Inc/UART_IO.h \
-    ../../Inc/TrellisI2C.h \
     ../../Inc/Physical_IO.h \
     ../../Inc/MIDI_ProcessBlock.h \
     ../../Inc/MIDI_MsgBuffer.h \
@@ -60,7 +59,8 @@ HEADERS += \
     ../../Inc/library/MidiEvent.h \
     ../../Inc/library/Binasc.h \
     ../../Inc/MIDI_Recorder.h \
-    ../../Inc/MIDI_Player.h
+    ../../Inc/MIDI_Player.h \
+    monitormodel.h
 
 DISTFILES +=
 
